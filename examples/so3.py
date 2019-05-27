@@ -1,5 +1,5 @@
 import lorm
-from lorm import discrepancySO3
+from disc import discrepancySO3
 import numpy as np
 import pylab as pl
 %matplotlib inline
@@ -35,7 +35,7 @@ cgMethod = lorm.optim.ConjugateGradientMethod()
 p_new = cgMethod.run(testf,p)
 #p_new = p
 t = lorm.manif.TangentVectorArrayParameterized(p_new)
-t.coords = 0.1*np.random.randn(M,9)
+t.coords = np.random.randn(M,9)
 f, q, x = lorm.utils.eval_objective_function_with_quadratic_approximation(testf,t)
 for y in [f,q]:
         pl.plot(y)

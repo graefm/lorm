@@ -1,6 +1,7 @@
 import lorm
 from lorm.manif import SO3
 from lorm.funcs import ManifoldObjectiveFunction
+from nfft import nfsoft
 import numpy as np
 
 class plan(ManifoldObjectiveFunction):
@@ -13,11 +14,11 @@ class plan(ManifoldObjectiveFunction):
         self._M = M
         self._N = N
         self._m = m
-        self._nfsoft_plan = lorm.nfsoft.plan(M, N+2, self._m)
-        self._lambda_hat = lorm.nfsoft.SO3FourierCoefficients(N)
+        self._nfsoft_plan = nfsoft.plan(M, N+2, self._m)
+        self._lambda_hat = nfsoft.SO3FourierCoefficients(N)
         for n in range(N+1):
             self._lambda_hat[n,:,:] = (2.*n+1)/(8*np.pi**2)
-        self._mu_hat = lorm.nfsoft.SO3FourierCoefficients(N)
+        self._mu_hat = nfsoft.SO3FourierCoefficients(N)
         self._mu_hat[0,0,0] = 8*np.pi**2 # int_SO(3) D^n_k,k'(x) mu(x)
         self._weights = 8*np.pi**2 * np.ones([M,1],dtype=float) / M
 

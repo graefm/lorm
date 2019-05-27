@@ -1,6 +1,7 @@
 import lorm
 from lorm.manif import Sphere2
 from lorm.funcs import ManifoldObjectiveFunction
+from nfft import nfsft 
 import numpy as np
 
 class plan(ManifoldObjectiveFunction):
@@ -12,10 +13,10 @@ class plan(ManifoldObjectiveFunction):
         '''
         self._M = M
         self._N = N
-        self._nfsft_plan = lorm.nfsft.plan(M, N+2)
-        self._lambda_hat = lorm.nfsft.SphericalFourierCoefficients(N)
+        self._nfsft_plan = nfsft.plan(M, N+2)
+        self._lambda_hat = nfsft.SphericalFourierCoefficients(N)
         self._lambda_hat.array[:] = 1
-        self._mu_hat = lorm.nfsft.SphericalFourierCoefficients(N)
+        self._mu_hat = nfsft.SphericalFourierCoefficients(N)
         self._mu_hat[0,0] = 1
         self._weights = np.sqrt(4*np.pi) * np.ones([M,1],dtype=float) / M
 

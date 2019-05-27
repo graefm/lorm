@@ -1,6 +1,7 @@
 import lorm
 from lorm.manif import EuclideanSpace
 from lorm.funcs import ManifoldObjectiveFunction
+from nfft import nfft
 import numpy as np
 import copy as cp
 
@@ -13,7 +14,7 @@ class plan(ManifoldObjectiveFunction):
         '''
         self._M = M
         self._N = N
-        self._nfft_plan = lorm.nfft.NFFT2D(M,N,N)
+        self._nfft_plan = nfft.NFFT2D(M,N,N)
         self._lambda_hat = np.ones([N,N])
         for i in range(N):
             for j in range(N):

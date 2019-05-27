@@ -1,5 +1,5 @@
 import lorm
-from lorm import discrepancyS2
+from disc import discrepancyS2
 import numpy as np
 import pylab as pl
 %matplotlib inline
