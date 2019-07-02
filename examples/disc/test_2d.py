@@ -2,8 +2,9 @@
 %autoreload 2
 import numpy as np
 import lorm
-import energy_curvling_2d
-import energy_stippling_2d
+import nfft
+from disc import energy_curveling_2d
+from disc import energy_stippling_2d
 import matplotlib.pyplot as pl
 %matplotlib inline
 
@@ -27,7 +28,7 @@ def plot_points_vecs(points,vecs=None, dots=True):
             ax.add_line(lin)
             lin = pl.Line2D([x[m-1,0],x[0,0]],[x[m-1,1],x[0,1]])
             ax.add_line(lin)
-    ax.axis(np.array([-0.5,0.5,-0.5,0.5]))
+    ax.axis(1.*np.array([-0.5,0.5,-0.5,0.5]))
     ax.axes.set_aspect(1)
     fig
 
@@ -41,7 +42,8 @@ def compute_img_fhat(N_half):
     #img = 1-pl.imread('gaussian2d.png')
     #pl.imshow(img)
     #img = 1-pl.imread('trui.png')
-    img = 256-pl.imread('pics/eyeofthetiger_original.jpg')
+    #img = np.ones([512,512],dtype=float)
+    img = 256-pl.imread('data/eyeofthetiger.jpg')
     N = int(img.shape[0]/2)
     fft_img = np.fft.fftshift(np.fft.ifft2(img))[N-N_half:N+N_half,N-N_half:N+N_half]
     img_scaled=np.real(np.fft.fft2(np.fft.fftshift(fft_img)))
@@ -55,7 +57,7 @@ def compute_img_fhat(N_half):
     for i in range(Mx*My):
         xy[i,0] = xv.ravel()[i]
         xy[i,1] = yv.ravel()[i]
-    plan = lorm.nfft.NFFT2D(Mx*My,2*N_half,2*N_half)
+    plan = nfft.nfft.NFFT2D(Mx*My,2*N_half,2*N_half)
     plan.x = xy
     plan.precompute_x()
     plan.f = img_scaled/Mx/My
@@ -73,28 +75,26 @@ pl.imshow(np.abs(img_fhat))
 
 #disc=energy_curvling_2
 #points.coords = generate_grid_points(10)
-m = 20000
+m = 100000#20000
 coords = np.zeros([m,2])
 for i in range(m):
     coords[i,0] = 0.3*np.cos(2*np.pi*i/m)
     coords[i,1] = 0.3*np.sin(2*np.pi*i/m)
-points.coords = temp.coords
+#points.coords = temp.coords
 points.coords = coords
 m = len(points.coords)
 m
 pl.plot(points.coords[:,0],points.coords[:,1])
 #temp.coords = points.coords
 #points.coords = temp.coords
-#alpha = 0.0000001
-#alpha = 0.0000000001
-alpha = 0.000000001
-N = 2*200
+alpha =  0.5*0.0000001
+N = 600
 #m = 600
 m = len(points.coords)
-disc=energy_curvling_2d.plan(m,N,alpha,10)
+disc=energy_curveling_2d.plan(m,N,alpha,2)
 #disc=energy_stippling_2d.plan(m,N)
 #for i in range(N):
-#    for j in range(N):
+    #    for j in range(N):
 #        disc._mu_hat[i,j] = np.exp(-((i-N/2)**2+(j-N/2)**2))
 #disc._mu_hat
 #np.max(np.real(img_fhat))
@@ -108,8 +108,8 @@ disc._mu_hat[int(N/2)-N_half:int(N/2)+N_half,int(N/2)-N_half:int(N/2)+N_half] = 
 #m= len(points.coords)
 disc.f(points)
 m
-method = lorm.optim.SteepestDescentMethod(max_iter=500)
-method = lorm.optim.ConjugateGradientMethod(max_iter=10)
+method = lorm.optim.SteepestDescentMethod(max_iter=20)
+method = lorm.optim.ConjugateGradientMethod(max_iter=100)
 for i in range(1):
     points = method.run(disc,points)
 
@@ -122,7 +122,7 @@ v=v.coords
 np.linalg.norm(v)
 plot_points_vecs(x,dots=True)
 plot_points_vecs(x,dots=False)
-pl.plot(points.coords[:,0],-points.coords[:,1],'o',markersize=0.1)
+pl.plot(points.coords[:,0],-points.coords[:,1],'o',markersize=0.2)
 np.savetxt('eyeofthetiger.coords',x)
 #np.savetxt('trui.coords',x)
 m
