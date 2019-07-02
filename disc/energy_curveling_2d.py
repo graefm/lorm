@@ -19,7 +19,7 @@ class plan(ManifoldObjectiveFunction):
         for i in range(N):
             for j in range(N):
                 norm_squared = (i-N/2)**2+(j-N/2)**2
-                self._lambda_hat[i,j] = 1./np.power(norm_squared+1,3/2)
+                self._lambda_hat[i,j] = 1./(np.power(1+norm_squared,3/2))
         self._mu_hat = np.zeros([N,N],dtype=np.complex)
         self._mu_hat[int(N/2),int(N/2)] = 1
         self._weights = np.ones(M,dtype=np.float)/M

@@ -1,11 +1,11 @@
-import lorm
+from nfft import nfft
 import numpy as np
 import pylab as pl
 %matplotlib inline
 
 Mx,My = 15,10
 Nx,Ny = 6,4
-nfft2d = lorm.nfft.NFFT2D(Mx*My,Nx,Ny)
+nfft2d = nfft.NFFT2D(Mx*My,Nx,Ny)
 x = np.linspace(-0.5,0.5,Mx,endpoint=False)
 y = np.linspace(-0.5,0.5,My,endpoint=False)
 xv, yv = np.meshgrid(x, y)

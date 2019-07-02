@@ -47,6 +47,14 @@ ext_modules.append(Extension(
             include_dirs=[numpy.get_include()],
             extra_compile_args='-O3 -fomit-frame-pointer -malign-double -fstrict-aliasing -ffast-math'.split()
             ))
+ext_modules.append(Extension(
+            name=nfft_name+'.cnfdsft',
+            sources=[os.path.join(nfft_dir, 'cnfdsft.pyx')],
+            libraries=nfft_libs,
+            library_dirs=[],
+            include_dirs=[numpy.get_include()],
+            extra_compile_args='-O3 -fomit-frame-pointer -malign-double -fstrict-aliasing -ffast-math'.split()
+            ))
 
 setup(name="lorm",
       version="0.0.1",
