@@ -54,7 +54,7 @@ class plan(ManifoldObjectiveFunction):
         return hess_mult_vector_array
 
     def _eval_grad(self,point_array_coords):
-        return np.real(self._eval_grad_error_vector(point_array_coords)) + self._alpha*self._eval_grad_sum_lengths_squared_powers(point_array_coords)
+        return np.real(self._eval_grad_error_vector(point_array_coords)) + self._alpha*self._eval_grad_sum_lengths_powers(point_array_coords)
 
     def _eval_error_vector(self,point_array_coords):
         self._nfft_plan.x = np.mod(point_array_coords+0.5,1)-0.5
@@ -102,7 +102,7 @@ class plan(ManifoldObjectiveFunction):
         lengths[1:self._M] = np.sqrt((x[1:self._M]-x[0:self._M-1])**2 + (y[1:self._M]-y[0:self._M-1])**2 + + (z[1:self._M]-z[0:self._M-1])**2)
         return lengths
 
-    def _eval_grad_lengths1(self,point_array_coords):
+    def _eval_grad_lengths(self,point_array_coords):
         grad_lengths = np.zeros([self._M,3])
         x=point_array_coords[:,0]
         y=point_array_coords[:,1]
@@ -112,22 +112,17 @@ class plan(ManifoldObjectiveFunction):
         grad_lengths[1:self._M,:] = (point_array_coords[1:self._M,:] - point_array_coords[0:self._M-1,:])
         return grad_lengths/lengths
 
-    def _eval_grad_sum_lengths_squared_powers(self,point_array_coords):
+    def _eval_grad_sum_lengths_powers(self,point_array_coords):
         lengths = self._eval_lengths(point_array_coords).reshape([self._M,1])
         sum_lengths_power = 1/self._p*np.power((self._M)**(self._p-1)*np.sum(lengths**(self._p)),1/self._p-1)
-        grad_lengths1 = self._eval_grad_lengths1(point_array_coords)
-        #grad_lengths2 = self._eval_grad_lengths2(point_array_coords)
+        grad_lengths1 = self._eval_grad_lengths(point_array_coords)
         grad_lengths2 = np.zeros([self._M,3])
         grad_lengths2[self._M-1,:] = -grad_lengths1[0,:]
         grad_lengths2[0:self._M-1,:] = -grad_lengths1[1:self._M,:]
 
         grad = np.zeros((self._M,3))
         grad[0,:] +=  self._p*lengths[0]**(self._p-1)*grad_lengths1[0,:]
-        #for i in range(1,self._M):
-        #    grad[i,:] += self._p*lengths[i]**(self._p-1)*grad_lengths1[i,:]
         grad[1:self._M,:] += self._p*lengths[1:self._M]**(self._p-1)*grad_lengths1[1:self._M,:]
         grad[self._M-1,:] += self._p*lengths[0]**(self._p-1)*grad_lengths2[self._M-1,:]
-        #for i in range(0,self._M-1):
-        #    grad[i,:] += self._p*lengths[i+1]**(self._p-1)*grad_lengths2[i,:]
         grad[0:self._M-1,:] += self._p*lengths[1:self._M]**(self._p-1)*grad_lengths2[0:self._M-1,:]
         return sum_lengths_power*(self._M)**(self._p-1)*grad

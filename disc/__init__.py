@@ -7,3 +7,4 @@ from . import energy_stippling_g24
 from . import energy_curveling_2d
 from . import energy_curveling_s2
 from . import energy_curveling_so3
+from . import energy_curveling_g24

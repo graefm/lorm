@@ -23,11 +23,8 @@ class plan(ManifoldObjectiveFunction):
                 #l1 = (M0+M1)/2.
                 #l2 = np.abs(M0-M1)/2.
                 l_squared = (M0**2+M1**2)/2. #l1**2+l2**2
-                if M0 == M1:
+                if M0 % 2 == M1 % 2:
                     self._lambda_hat[M0,M1,:,:] = 1.#/(l_squared+1)**(0.5)
-                else:
-                    if M0 % 2 == M1 % 2:
-                        self._lambda_hat[M0,M1,:,:] = 1.#/(l_squared+1)**(0.5)
         self._mu_hat = nfdsft.DoubleSphericalFourierCoefficients(N)
         self._mu_hat[0,0,0,0] = 1
         self._weights = 4*np.pi*np.ones([M,1],dtype=float) / M
@@ -47,20 +44,6 @@ class plan(ManifoldObjectiveFunction):
             norm = np.linalg.norm(tangent_array_coords)
             h = 1e-7
             return norm*(self._grad(base_point_array_coords + h*tangent_array_coords/norm) - self._grad(base_point_array_coords))/h
-
-#        def hess_mult(base_point_array_coords, tangent_array_coords):
-#            le  = self._eval_error_vector(base_point_array_coords)
-#            le *= self._lambda_hat
-#            # we already set the point_array_coords in _eval_error_vector
-#            hess_mult = 2*np.real(self._nfsft_plan.compute_gradYmatrix_multiplication(\
-#                                  self._lambda_hat * self._nfsft_plan.compute_gradYmatrix_adjoint_multiplication(\
-#                                  tangent_array_coords * self._weights )) ) * self._weights
-#            hess_array = np.real(self._nfsft_plan.compute_hessYmatrix_multiplication(le))
-#            hess_mult[:,0] += 2 * self._weights.reshape(self._M) * (  hess_array[:,0] * tangent_array_coords[:,0]\
-#                                                                    + hess_array[:,1] * tangent_array_coords[:,1])
-#            hess_mult[:,1] += 2 * self._weights.reshape(self._M) * (   hess_array[:,1] * tangent_array_coords[:,0]\
-#                                                                     + hess_array[:,2] * tangent_array_coords[:,1])
-#            return hess_mult
 
         ManifoldObjectiveFunction.__init__(self,Sphere2(),f,grad=grad,hess_mult=hess_mult, parameterized=True)
 

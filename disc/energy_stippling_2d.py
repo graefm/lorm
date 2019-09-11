@@ -15,9 +15,9 @@ class plan(ManifoldObjectiveFunction):
         self._M = M
         self._N = N
         self._nfft_plan = nfft.NFFT2D(M,N,N)
-        self._lambda_hat = np.ones([N,N])
-        for i in range(N):
-            for j in range(N):
+        self._lambda_hat = np.zeros([N,N])
+        for i in range(1,N):
+            for j in range(1,N):
                 norm_squared = (i-N/2)**2+(j-N/2)**2
                 self._lambda_hat[i,j] = 1./(np.power(1+norm_squared,3/2))
         self._mu_hat = np.zeros([N,N],dtype=np.complex)

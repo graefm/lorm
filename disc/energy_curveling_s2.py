@@ -6,7 +6,7 @@ import numpy as np
 import copy as cp
 
 class plan(ManifoldObjectiveFunction):
-    def __init__(self, M, N, alpha, p):
+    def __init__(self, M, N, alpha, p, T):
         '''
         plan for computing the (polynomial) L^2 discrepancy of curves on the sphere S^2
         M - number of points
@@ -22,18 +22,19 @@ class plan(ManifoldObjectiveFunction):
         self._weights = np.sqrt(4*np.pi) * np.ones([M,1],dtype=float) / M
         self._alpha = alpha
         self._p = p
+        self._T = T
 
 
         def f(point_array_coords):
             lengths = self._eval_lengths(point_array_coords)
             err_vector = self._eval_error_vector(point_array_coords)
-            return np.sum(np.real(np.dot(err_vector.array.conjugate(),self._lambda_hat.array*err_vector.array))) + self._alpha*np.power((self._M)**(self._p-1)*np.sum(lengths**(self._p)),1/self._p)
+            return np.sum(np.real(np.dot(err_vector.array.conjugate(),self._lambda_hat.array*err_vector.array))) + self._alpha*np.power(1/self._M*np.sum((self._M*lengths-self._T)**(self._p)),1/self._p)
 
         def grad(point_array_coords):
             le  = self._eval_error_vector(point_array_coords)
             le *= self._lambda_hat
             # we already set the point_array_coords in _eval_error_vector
-            grad = 2*np.real(self._nfsft_plan.compute_gradYmatrix_multiplication(le)) * self._weights + self._alpha*self._eval_grad_sum_lengths_squared_powers(point_array_coords)
+            grad = 2*np.real(self._nfsft_plan.compute_gradYmatrix_multiplication(le)) * self._weights + self._alpha*self._eval_grad_sum_lengths_powers(point_array_coords)
             return grad
 
         def hess_mult(base_point_array_coords, tangent_array_coords):
@@ -114,18 +115,18 @@ class plan(ManifoldObjectiveFunction):
         grad_lengths[0:self._M-1,1] =  -np.sin(dp[1:self._M])*st[1:self._M]*st[0:self._M-1]/lengths[1:self._M]
         return grad_lengths
 
-    def _eval_grad_sum_lengths_squared_powers(self,point_array_coords):
+    def _eval_grad_sum_lengths_powers(self,point_array_coords):
         lengths = self._eval_lengths(point_array_coords).reshape([self._M,1])
-        sum_lengths_power = 1/self._p*np.power((self._M)**(self._p-1)*np.sum(lengths**(self._p)),1/self._p-1)
+        sum_lengths_power = 1/self._p*np.power(1./self._M*np.sum((self._M*lengths-self._T)**(self._p)),1/self._p-1)
         grad_lengths1 = self._eval_grad_lengths1(point_array_coords)
         grad_lengths2 = self._eval_grad_lengths2(point_array_coords)
         grad = np.zeros((self._M,2))
-        grad[0,:] +=  self._p*lengths[0]**(self._p-1)*grad_lengths1[0,:]
+        grad[0,:] +=  self._p*(self._M*lengths[0]-self._T)**(self._p-1)*grad_lengths1[0,:]
         #for i in range(1,self._M):
         #    grad[i,:] += self._p*lengths[i]**(self._p-1)*grad_lengths1[i,:]
-        grad[1:self._M,:] += self._p*lengths[1:self._M]**(self._p-1)*grad_lengths1[1:self._M,:]
-        grad[self._M-1,:] += self._p*lengths[0]**(self._p-1)*grad_lengths2[self._M-1,:]
+        grad[1:self._M,:] += self._p*(self._M*lengths[1:self._M]-self._T)**(self._p-1)*grad_lengths1[1:self._M,:]
+        grad[self._M-1,:] += self._p*(self._M*lengths[0]-self._T)**(self._p-1)*grad_lengths2[self._M-1,:]
         #for i in range(0,self._M-1):
         #    grad[i,:] += self._p*lengths[i+1]**(self._p-1)*grad_lengths2[i,:]
-        grad[0:self._M-1,:] += self._p*lengths[1:self._M]**(self._p-1)*grad_lengths2[0:self._M-1,:]
-        return sum_lengths_power*(self._M)**(self._p-1)*grad
+        grad[0:self._M-1,:] += self._p*(self._M*lengths[1:self._M]-self._T)**(self._p-1)*grad_lengths2[0:self._M-1,:]
+        return sum_lengths_power*grad
