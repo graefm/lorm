@@ -1,0 +1,995 @@
+%\documentclass[12pt,a4paper]{amsart}
+%!TEX TS-options = --shell-escape
+\pdfobjcompresslevel=0% fix PDF inclusions
+\documentclass[%draft,
+a4paper,11pt,DIV=11,% decrease borders by 2 (std 10 for 11pt)
+abstract=on% return to old style centered abstract
+]{scrartcl}
+%
+\usepackage{algorithm, booktabs}
+\usepackage{mathtools}
+\mathtoolsset{showonlyrefs}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{faktor}
+\usepackage{amscd}
+\usepackage{array}
+%\usepackage{refcheck}\norefnames
+\usepackage{amsthm}
+\usepackage{subfigure}
+\usepackage{mathdots}
+\usepackage{mathrsfs}
+\usepackage[noend]{algpseudocode}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{pgf}
+\usepackage{scrpage2}
+\usepackage{multirow}
+\usepackage{listings}
+\lstset{language=matlab,showstringspaces=false,basicstyle={\ttfamily}}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage[left=2.5cm, right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage{scalerel}
+
+\newcommand{\weakly}{\rightharpoonup}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\T}{\ensuremath{\mathbb{T}}}
+\renewcommand{\S}{\ensuremath{\mathbb{S}}}
+\newcommand{\B}{\ensuremath{\mathbb{B}}}
+\newcommand{\NZ}{\ensuremath{\mathbb{N}_{0}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\Q}{\ensuremath{\mathbb{Q}}}
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\C}{\ensuremath{\mathbb{C}}}
+\newcommand{\nchoosek}[2]{\left(\begin{array}{c}#1\\#2\end{array}\right)}
+\newcommand{\ii}{\textnormal{i}}
+\newcommand{\X}{\mathbb{X}}
+\newcommand{\Y}{\mathbb{Y}}
+\newcommand{\e}{\textnormal{e}}
+\newcommand{\supp}{\textnormal{supp}}
+\newcommand{\eip}[1]{\textnormal{e}^{2\pi\ii{#1}}}
+\newcommand{\eim}[1]{\textnormal{e}^{-2\pi\ii{#1}}}
+\newcommand{\norm}[1]{\left\Vert #1\right\Vert}
+\def\invisible#1{\textcolor{white}{#1}}
+\newcommand{\ceil}[1]{\encl{\lceil}{#1}{\rceil}}
+\newcommand{\floor}[1]{\encl{\lfloor}{#1}{\rfloor}}
+\newcommand{\zb}[1]{\ensuremath{\boldsymbol{#1}}}
+\newcommand{\pmat}[1]{\begin{pmatrix} #1 \end{pmatrix}}
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+\newcommand{\abs}[1]{\left| #1 \right |}
+\newcommand{\dx}{\,\mathrm{d}}
+\newcommand{\tT}{\mathrm{T}}
+\newcommand{\uT}{\scriptscriptstyle{T}}
+\newcommand{\uuT}{{\scaleto{T}{3pt}}}
+\newcommand{\TSP}{\text{TSP}}
+
+\def\3{\ss}
+\def\ep{\varepsilon}
+\def\la{\lambda}
+\def\La{{\mathbf\lambda}}
+\def\Ga{\Gamma}
+\def\fl#1{\lfloor#1\rfloor}
+\def\cl#1{\lceil#1\rceil}
+
+\newmuskip\pFqmuskip
+
+\newcommand*\pFq[6][8]{
+  \begingroup % only local assignments
+  \pFqmuskip=#1mu\relax
+  % make the comma math active
+ % \mathcode`\,=\string"8000
+  % and define it to be \pFqcomma
+  \begingroup\lccode`\~=`\,
+  \lowercase{\endgroup\let~}\pFqcomma
+  % typeset the formula
+  {}_{#2}F_{#3}{\left(\genfrac..{0pt}{}{#4}{#5};#6\right)}%
+  \endgroup
+}
+\newcommand*\pRegFq[6][8]{
+  \begingroup % only local assignments
+  \pFqmuskip=#1mu\relax
+  % make the comma math active
+ % \mathcode`\,=\string"8000
+  % and define it to be \pFqcomma
+  \begingroup\lccode`\~=`\,
+  \lowercase{\endgroup\let~}\pFqcomma
+  % typeset the formula
+  {}_{#2}\tilde{F}_{#3}{\left(\genfrac..{0pt}{}{#4}{#5};#6\right)}%
+  \endgroup
+}
+
+
+\newcommand{\pFqcomma}{\mskip\pFqmuskip}
+
+
+\newcommand*{\bigtimes}{\mathop{\raisebox{-.5ex}{\hbox{\Large{$\times$}}}}}
+
+\DeclareMathOperator{\Lip}{Lip}
+\DeclareMathOperator*{\AC}{AC^p}
+\DeclareMathOperator*{\Speed}{Speed}
+\DeclareMathOperator*{\Length}{Length}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\diag}{diag}
+\DeclareMathOperator*{\trace}{trace}
+\DeclareMathOperator*{\diam}{diam}
+\DeclareMathOperator*{\spann}{span}
+\DeclareMathOperator{\dist}{dist}
+\DeclareMathOperator{\F}{F}
+\DeclareMathOperator*{\maxdeg}{maxdeg}
+\DeclareMathOperator*{\sep}{sep}
+\DeclareMathOperator*{\lt}{lt}
+\DeclareMathOperator*{\Var}{Var}
+\DeclareMathOperator*{\Beta}{Beta}
+\DeclareMathOperator{\G}{\mathcal{G}}
+\DeclareMathOperator{\geo}{geo}
+\DeclareMathOperator{\ch}{ch}
+\DeclareMathOperator*{\per}{per}
+\DeclareMathOperator*{\id}{id}
+\DeclareMathOperator*{\vol}{vol}
+\DeclareMathOperator{\Pol}{Pol}
+\DeclareMathOperator*{\Real}{Re}
+\DeclareMathOperator*{\Imag}{Im}
+\DeclareMathOperator*{\disc}{disc}
+\DeclareMathOperator{\OOO}{O}
+\DeclareMathOperator*{\SO}{SO}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\Mapprox}{\mathcal{P}_{\text{res}}(\mathcal M)}
+\DeclareMathOperator{\Space}{\mathcal{M}}
+
+
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lemma}[thm]{Lemma}
+\newtheorem{remark}[thm]{Remark}
+\newtheorem{definition}[thm]{Definition}
+\newtheorem{example}[thm]{Example}
+\newtheorem{corollary}[thm]{Corollary}
+\newtheorem{proposition}[thm]{Proposition}
+
+%---------------------------------------------------------------------------
+\begin{document}
+\title{Curve Based Approximation of Measures on Manifolds by Discrepancy Minimization}
+
+\author{
+Martin Ehler\footnotemark[1],
+\and
+Manuel Gr\"af\footnotemark[2],
+\and
+Sebastian Neumayer\footnotemark[3]
+\and
+and Gabriele Steidl\footnotemark[3]
+}
+\maketitle
+
+\date{\today}
+
+
+\footnotetext[3]{Department of Mathematics,
+	TU Kaiserslautern,
+	Paul-Ehrlich-Str.~31, D-67663 Kaiserslautern, Germany,
+	\{neumayer,steidl\}@mathematik.uni-kl.de
+	}
+\footnotetext[1]{University of Vienna, Department of Mathematics, Vienna, Austria,
+	\{martin.ehler\}@univie.ac.at
+	}
+\footnotetext[2]{Austrian Academy of Sciences, Acoustics Research Institute, Vienna, Austria,
+	\{mgraef\}@kfs.oeaw.ac.at
+	}
+
+\begin{abstract}
+	\noindent\small
+	
+
+\end{abstract}
+
+\section{Main problem}
+
+We like to solve
+\begin{equation}
+  \label{eq:min_PL}
+  \inf_{\nu} \mathcal D(\nu,\mu) \qquad \text{subject to} \qquad \nu \in \mathcal P_{L}^{\mathrm{curve}}(\mathbb X). 
+\end{equation}
+
+
+\section{Numerical Approach}
+
+For fixed $L>0$ and probability measure $\mu$ on $\mathbb X$ we aim to solve the minimization problem
+\begin{equation}
+  \label{eq:constant_speed_min}
+  \min_{x_{1},\dots,x_{N}} \mathscr{D}^{2} \Big(\mu, \frac{1}{N} \sum_{k=1}^{N} \delta_{x_{k}}\Big) \qquad \mathrm{s.t.} \qquad    \mathrm{dist}(x_{1},x_{2}) =  \mathrm{dist}(x_{2},x_{3}) = \dots = \mathrm{dist}(x_{N},x_{1}) =  \frac LN.
+\end{equation}
+Letting $N$ tend to infinity we eventually approach a closed curve $\gamma$, $\gamma(\tfrac kN) \approx x_{k}$ of constant speed $L$ such that the push-forward $\nu = \gamma_{*}(\omega)$, of the Lebesgue measure $\omega$, approaches $\mu$.  
+
+We shall solve the optimization problem approximately by applying the nonlinear conjugate gradient method, cf. {\color{blue} Section ...}, to the following unconstrained formulation
+\begin{equation}
+  \label{eq:constant_speed_min_relaxed}
+  \min_{x_{1},\dots,x_{N}} \mathscr{D}^{2} \Big(\mu, \frac{1}{N} \sum_{k=1}^{N} \delta_{x_{k}}\Big) +   \frac{\alpha}{N} \sum_{k=1}^{N} \big(N \mathrm{dist}(x_{k-1},x_{k}) - L \big)^{2}
+\end{equation}
+where $\alpha > 0$ is a penalty parameter. Note, for $\alpha \to \infty$ there is a subsequence of minimizers of \eqref{eq:constant_speed_min_relaxed} which will converge to minimizers of \eqref{eq:constant_speed_min}.
+
+Recall that for given kernels $K:\mathbb X\times \mathbb X \to \mathbb R$ the squared discrepancy can be evaluated by
+\[
+  \mathscr D^{2}\Big(\mu, \frac 1N \sum_{k=1}^{N} \delta_{x_{k}}\Big) = E_{\mu}(x_{1},\dots,x_{N})
+\]
+where
+\begin{equation}
+  \label{eq:E_mu}
+  E_{\mu}(x_{1},\dots,x_{N}) :=
+    \frac{1}{N^{2}}\sum_{i,j=1}^{N} K(x_{i},x_{j}) - 2\sum_{i=1}^{N} \int_{\mathbb X} K(x_{i},x) \mathrm d\mu(x) + \int_{\mathbb X}\int_{\mathbb X} K(x,y) \mathrm d\mu(x) \mathrm d\mu(y).
+  \end{equation}
+Using the eigenfunction expansion
+\[
+ K(x,y) = \sum_{l=0}^{\infty} \lambda_{l} \varphi_{l}(x) \overline{\varphi_{l}(y)} 
+\]
+we have the alternative evaluation formula
+\begin{equation}
+  \label{eq:E_mu_Fourier}
+  E_{\mu}(x_{1},\dots,x_{N}) = \sum_{l=0}^{\infty} \lambda_{l} \Big| \hat\mu_{l}
+  - \frac 1N \sum_{i=1}^{N} \varphi_{l}(x_{i}) \Big|^{2}, \quad\quad \mu_{l} := \int_{\mathbb X} \varphi_{l}(x) \mathrm d\mu(x).
+\end{equation}
+Both formulas have it pros and cons:
+\begin{itemize}
+\item The formula \eqref{eq:E_mu} allows for exact evaluation only if the expression
+\[
+  K_{\mu}(x) := \int_{\mathbb X} K(x,y) \mathrm d\mu(y), \qquad  c_{\mu} := \int_{\mathbb X} K_{\mu}(x) \mathrm d\mu(x),
+\]
+can be written in closed form. In that case the complexity scales quadratically in the number $N$ of points.
+
+\item The formula \eqref{eq:E_mu_Fourier} allows for exact evaluation only if the kernel has a finite expansion. In that case the complexity scales linearly in the number $N$ of points. 
+\end{itemize}
+Our approach is to approximate the kernel $K$ by a truncation
+\[
+  K_{t}(x,y) := \sum_{l=0}^{t} \lambda_{l} \varphi_{l}(x) \overline{\varphi_{l}(y)}
+\]
+with $t \sim N$ and evaluate formula \eqref{eq:E_mu_Fourier} by fast summation methods, so that the overall complexity is almost linearly in $t$ and $N$. 
+
+{\color{blue} To support the reasonablenes of this approach we may compare the minimizers of $K$ with $K_{t}$ for the uniform measure $\mu$.}
+\subsection{Choice of Parameters}
+
+In order to find reasonable (local) solutions of \eqref{eq:min_PL} we shall carefully adjust the parameters in problem \eqref{eq:constant_speed_min_relaxed}, namely $N$, $\alpha$, and the polynomial degree $t$.
+
+\textbf{Number of Points.}
+From the asymptotic of the path lengths of the traveling sales man problem (TSP) {\color{blue}(see aslo asymptotic for atomic/empirical measures)}
+we know that we should choose
+\[
+  N \sim L(\gamma)^{\frac{d}{d-1}},
+\]
+where
+\[
+  L(\gamma) = \sum_{k=1}^{N} \mathrm{dist}(x_{k-1},x_{k})
+\]
+is the length of the resulting constant speed curve $\gamma$ going through the points, i.e.,
+\[
+ \gamma(t_{k}) := x_{k}, \qquad t_{k} = \sum_{i=1}^{k}  \mathrm{dist}(x_{i-1},x_{i})/ L(\gamma).
+\]
+
+In Figure~\ref{fig:Nexperiment} {(\color{blue} Example environment..?)} we show some results for the two-dimensional torus. 
+
+\textbf{Penalty Parameter.}
+Intuitively, the minimizers of \eqref{eq:constant_speed_min_relaxed} will treat both terms almost equally, i.e., for $N\to \infty$ both terms are of the same order. Hence, our heuristic is to chose the parameter $\alpha$, such that the objective function and the penalty term are of the same order for minimizers of \eqref{eq:constant_speed_min_relaxed} i.e.,
+\begin{equation}
+  \label{eq:penalty_behavior}
+  \frac{\alpha}{N} \sum_{k=1}^{N} \big(N \mathrm{dist}(x_{k-1},x_{k}) - L \big)^{2} \sim N^{-\frac{2s}{d}} \sim
+  \min_{x_{1},\dots,x_{N}} \mathscr{D}^{2} \Big(\mu, \frac{1}{N} \sum_{k=1}^{N} \delta_{x_{k}}\Big) 
+\end{equation}
+Assuming that for the length $L(\gamma_{N}) = \sum_{k=1}^{N}\mathrm{dist}(x_{k-1},x_{k})$ of a minimizer $\gamma$ we have $L(\gamma) \sim L$ and that $\mathrm{dist}(x_{k-1},x_{k}) \approx \frac1N L(\gamma)$, then the value of the penalty term behaves like
+\[
+  \frac{\alpha}{N} \sum_{k=1}^{N} \big(N \mathrm{dist}(x_{k-1},x_{k}) - L \big)^{2} \sim  \alpha L^{2} \sim \alpha N^{\frac{2d}{d-1}}
+\]
+So that a reasonable choice is
+\[
+  \alpha \sim L^{-\frac{2s}{d-1}-2} \sim N^{\frac{-2s-2d+2}{d}}.
+\]
+
+In Figure~\ref{fig:L_alpha_experiment} {(\color{blue}Example environment..?)} we show some results for the two-dimensional torus. 
+
+\textbf{Polynomial degree.} We believe it is reasonable to take $t \sim N^{\frac1d} \sim L^{\frac{1}{d-1}}$. Note, in that case the computational cost is almost linearly in $N$, for $\mathbb X = \mathbb T^{d}, \mathbb S^{2}, \mathrm{SO(3)}, \mathcal G_{2,4}$. In Figure~\ref{fig:t_experiment} {(\color{blue}Example environment..?)} we show some results for the two-dimensional torus. 
+
+
+
+\subsection{Basic Observations}
+For large $L$ we cannot hope to find a solution/global minimizer to problem \eqref{eq:constant_speed_min_relaxed}, since the number of local minimizers appears to increase exponentially {\color{blue}[ ref???]}.
+
+The intention of this section is to provide a case study of the influence/interplay of certain parameters to (local) solutions of
+problem \eqref{eq:constant_speed_min_relaxed}, namely
+\begin{itemize}
+\item the parameters $L$, $N$, $\alpha$
+\item initial point/curve
+\item choice of kernel (truncation parameter $t$)
+\item choice of measure $\mu$ (atomic, singular, regular, disconnected support,...) 
+\end{itemize}
+
+In what follows we apply the conjugate gradient method to problem \eqref{eq:constant_speed_min_relaxed} for the torus $\mathbb T^{2}$.
+
+\textbf{Influence of the number of points.} We like to show the dependence on the parameter $N$. In this experiment we increase for fixed $L$ and $\alpha$ the number $N$ of points by subdividing the line segments.  We let $\mu$ be the Lebesgue measure, $L=4$, $\alpha=0.1\cdot 2^{-\frac52 i}$, $i=1,\dots,5$, and consider the kernel $K_{t}$, $t=32$. We start with a local minimizer for $N=10$. Then, we successively increase $N$ by inserting the mid points of the line segments connecting $x_{i}$ and $x_{i+1}$ and perform a local minimization. The results are depicted in Figure~\ref{fig:Nexperiment}.
+
+Note, the choice $\alpha =0.1 (N/5)^{-\frac 52}$ on the diagonal in  Figure~\ref{fig:Nexperiment} {\color{blue}(see section: choice of alpha)}. This shows that the number of points leads to reasonable approximations, where the main features of the curves are preserved.
+
+\begin{figure}
+  \begin{tabular}{ccccc}
+$N=10$  &  $N=20$   & $N=40$  & $N=80$  & $N=160$ \\
+  \includegraphics[width=0.18\textwidth]{Images/N10_L4_a1000} & 
+  \includegraphics[width=0.18\textwidth]{Images/N20_L4_a1000} & 
+  \includegraphics[width=0.18\textwidth]{Images/N40_L4_a1000} &
+  \includegraphics[width=0.18\textwidth]{Images/N80_L4_a1000} &
+  \includegraphics[width=0.18\textwidth]{Images/N160_L4_a1000}\\
+$L(\gamma)\approx 4.0000$ &
+$L(\gamma)\approx 4.0000$ &
+$L(\gamma)\approx 4.0000$ &
+$L(\gamma)\approx 4.0000$ &
+$L(\gamma)\approx 4.0000$\\ 
+  \includegraphics[width=0.18\textwidth]{Images/N10_L4_i1} & 
+  \includegraphics[width=0.18\textwidth]{Images/N20_L4_i1} & 
+  \includegraphics[width=0.18\textwidth]{Images/N40_L4_i1} &
+  \includegraphics[width=0.18\textwidth]{Images/N80_L4_i1} &
+  \includegraphics[width=0.18\textwidth]{Images/N160_L4_i1}\\
+$L(\gamma)\approx 3.72$ &
+$L(\gamma)\approx 4.20$ &
+$L(\gamma)\approx 4.43$ &
+$L(\gamma)\approx 4.49$ &
+$L(\gamma)\approx 4.50$\\ 
+  \includegraphics[width=0.18\textwidth]{Images/N10_L4_i2} & 
+  \includegraphics[width=0.18\textwidth]{Images/N20_L4_i2} & 
+  \includegraphics[width=0.18\textwidth]{Images/N40_L4_i2} &
+  \includegraphics[width=0.18\textwidth]{Images/N80_L4_i2} &
+  \includegraphics[width=0.18\textwidth]{Images/N160_L4_i2}\\
+$L(\gamma)\approx 3.68$ &
+$L(\gamma)\approx 4.47$ &
+$L(\gamma)\approx 5.16$ &
+$L(\gamma)\approx 5.38$ &
+$L(\gamma)\approx 5.44$\\ 
+  \includegraphics[width=0.18\textwidth]{Images/N10_L4_i3} & 
+  \includegraphics[width=0.18\textwidth]{Images/N20_L4_i3} & 
+  \includegraphics[width=0.18\textwidth]{Images/N40_L4_i3} &
+  \includegraphics[width=0.18\textwidth]{Images/N80_L4_i3} &
+  \includegraphics[width=0.18\textwidth]{Images/N160_L4_i3}\\
+$L(\gamma)\approx 3.68$ &
+$L(\gamma)\approx 4.66$ &
+$L(\gamma)\approx 5.91$ &
+$L(\gamma)\approx 6.64$ &
+$L(\gamma)\approx 6.87$\\ 
+  \includegraphics[width=0.18\textwidth]{Images/N10_L4_i4} & 
+  \includegraphics[width=0.18\textwidth]{Images/N20_L4_i4} & 
+  \includegraphics[width=0.18\textwidth]{Images/N40_L4_i4} &
+  \includegraphics[width=0.18\textwidth]{Images/N80_L4_i4} &
+  \includegraphics[width=0.18\textwidth]{Images/N160_L4_i4}\\
+$L(\gamma)\approx 3.69$ &
+$L(\gamma)\approx 4.73$ &
+$L(\gamma)\approx 6.45$ &
+$L(\gamma)\approx 8.15$ &
+$L(\gamma)\approx 9.03$\\ 
+  \includegraphics[width=0.18\textwidth]{Images/N10_L4_i5} & 
+  \includegraphics[width=0.18\textwidth]{Images/N20_L4_i5} & 
+  \includegraphics[width=0.18\textwidth]{Images/N40_L4_i5} &
+  \includegraphics[width=0.18\textwidth]{Images/N80_L4_i5} &
+  \includegraphics[width=0.18\textwidth]{Images/N160_L4_i5}\\
+$L(\gamma)\approx 3.69$ &
+$L(\gamma)\approx 4.74$ &
+$L(\gamma)\approx 6.73$ &
+$L(\gamma)\approx 9.02$ &
+$L(\gamma)\approx 11.25$\\ 
+  \end{tabular}
+  \caption{Local minimizers  of \eqref{eq:constant_speed_min_relaxed} for $\mu$ the Lebesgue measure, $L=4$ with kernel $K_{t}$, $t=64$ and increasing $N$ (column-wise) and decreasing $\alpha$ (row-wise). The first row shows the local minimizers for  $\alpha=1000$ and corresponds to curves of constant speed and length $L=4$. In the following rows local minimizers are depicted for $\alpha = 0.1\cdot 2^{-\frac52 i}$,$i=1,\dots,5$. Note, the increase in the length of the curves for decreasing $\alpha$ or increasing $N$, until stagnation for sufficient small $\alpha$ or big $N$. For all minimizer the distance between consecutive points is around $L(\gamma)/N$.}
+  \label{fig:Nexperiment}
+\end{figure}
+
+\textbf{Influence of the penalty parameter.} In this experiment we like to give an intuition of the parameter $\alpha$. There we choose $\alpha := c L^{-5}$ and observe that indeed the (local) minimizers have length almost proportional to $L$. In the experiment we chose $N$ sufficiently large, see Figure~\ref{fig:Nexperiment}. We note that the distance of consecutive points do vary more for smaller constants $c$, i.e., for higher ratios $L(\gamma)/L$. In other words the measure $\omega$ along the constant speed curve differ more from the Lebesgue measure. This corresponds to the fact that $\alpha$ needs to tend to infinity in order to solve problem \eqref{eq:constant_speed_min}.
+\begin{figure}
+  \begin{tabular}{cccc}
+    % $L=1$  &
+               $L=2$ &  $L=4$  & $L=8$ & $L=16$\\
+%  \includegraphics[width=0.23\textwidth]{Images/Ramp_L1_i1} & 
+  \includegraphics[width=0.23\textwidth]{Images/Ramp_L2_i1} & 
+  \includegraphics[width=0.23\textwidth]{Images/Ramp_L4_i1} & 
+  \includegraphics[width=0.23\textwidth]{Images/Ramp_L8_i1} &
+  \includegraphics[width=0.23\textwidth]{Images/Ramp_L16_i1} \\
+%$L(\gamma)\approx 3.92$ &
+$L(\gamma)\approx 8.01$ &
+$L(\gamma)\approx 16.23$ &
+$L(\gamma)\approx 32.62$ &
+$L(\gamma)\approx 65.90$ \\
+%  \includegraphics[width=0.23\textwidth]{Images/Ramp_L1_i2} & 
+  \includegraphics[width=0.23\textwidth]{Images/Ramp_L2_i2} & 
+  \includegraphics[width=0.23\textwidth]{Images/Ramp_L4_i2} & 
+  \includegraphics[width=0.23\textwidth]{Images/Ramp_L8_i2} &
+  \includegraphics[width=0.23\textwidth]{Images/Ramp_L16_i2} \\
+%$L(\gamma)\approx 1.90$ &
+$L(\gamma)\approx 3.94$ &
+$L(\gamma)\approx 8.05$ &
+$L(\gamma)\approx 16.31$ &
+$L(\gamma)\approx 32.72$ \\
+%  \includegraphics[width=0.23\textwidth]{Images/Ramp_L1_i3} & 
+  \includegraphics[width=0.23\textwidth]{Images/Ramp_L2_i3} & 
+  \includegraphics[width=0.23\textwidth]{Images/Ramp_L4_i3} & 
+  \includegraphics[width=0.23\textwidth]{Images/Ramp_L8_i3} &
+  \includegraphics[width=0.23\textwidth]{Images/Ramp_L16_i3} \\
+%$L(\gamma)\approx 1.01$ &
+$L(\gamma)\approx 2.03$ &
+$L(\gamma)\approx 4.08$ &
+$L(\gamma)\approx 8.21$ &
+$L(\gamma)\approx 16.46$ \\
+  \end{tabular}
+   \caption{Local minimizers  of \eqref{eq:constant_speed_min_relaxed} for $\mu$ the measure given by the density $\frac{2\pi-y}{4\pi^{3}} \mathrm dx \mathrm dy$, with kernel $K_{t}$, $t=128$ and several choices of $L$ and $\alpha$. $L$ is increasing column-wise and row-wise we set $\alpha = c L^{-5}$. The constants $c=0.003,0.14,100$ are chosen such that the length of the minimizers satisfy $L(\gamma) / L \approx 4,2,1$, respectively. The density of the measure $\omega$ corresponds to the thickness of the curves.}
+  \label{fig:L_alpha_experiment}
+\end{figure}
+
+\textbf{Influence of the degree.} Now, we like to show the effect of the truncation parameter $t$, i.e., the degree of $K_{t}$. From the previous observations and discussions we infer that the choice $N \sim L^{2}$ and $\alpha \sim L^{-5}$ are quite reasonable. In this experiment we shall provide some evidence that the choice $t \sim L$ might also be reasonable.
+In Figure~\ref{fig:t_experiment} we depict the local minimizers of \eqref{eq:constant_speed_min_relaxed} for fixed parameters $L=2,4,8,16$, whith $\alpha = 0.2 \cdot L^{-5}$, $N=20 L^{2}$. We can observe that for $t = c L$ the corresponding local minimizers have common features. For instance, if $c=2$ ($t \approx L(\gamma)$) the minimizers have mostly vertical and horizantal line segments, similar to a path along a grid. Furthermore for sufficientt large $c$, say $c\ge 4$, the minimizers appear to provide {\color{blue} mercedes-star junctions (oder wie würdet ihr dazu sagen ;)}. 
+
+\begin{figure}
+  \begin{tabular}{ccccc}
+$t=8$  &  $t=16$   & $t=32$  & $t=64$  & $t=128$ \\
+  \includegraphics[width=0.18\textwidth]{Images/T8_L2} & 
+  \includegraphics[width=0.18\textwidth]{Images/T16_L2} & 
+  \includegraphics[width=0.18\textwidth]{Images/T32_L2} & 
+  \includegraphics[width=0.18\textwidth]{Images/T64_L2} & 
+  \includegraphics[width=0.18\textwidth]{Images/T128_L2} \\
+$L(\gamma)\approx 4.07$ &
+$L(\gamma)\approx 4.07$ &
+$L(\gamma)\approx 4.06$ &
+$L(\gamma)\approx 4.06$ &
+$L(\gamma)\approx 4.05$\\ 
+  \includegraphics[width=0.18\textwidth]{Images/T8_L4} & 
+  \includegraphics[width=0.18\textwidth]{Images/T16_L4} & 
+  \includegraphics[width=0.18\textwidth]{Images/T32_L4} & 
+  \includegraphics[width=0.18\textwidth]{Images/T64_L4} & 
+  \includegraphics[width=0.18\textwidth]{Images/T128_L4} \\
+$L(\gamma)\approx 8.48$ &
+$L(\gamma)\approx 8.28$ &
+$L(\gamma)\approx 8.32$ &
+$L(\gamma)\approx 8.23$ &
+$L(\gamma)\approx 8.22$\\ 
+  \includegraphics[width=0.18\textwidth]{Images/T8_L8} & 
+  \includegraphics[width=0.18\textwidth]{Images/T16_L8} & 
+  \includegraphics[width=0.18\textwidth]{Images/T32_L8} & 
+  \includegraphics[width=0.18\textwidth]{Images/T64_L8} & 
+  \includegraphics[width=0.18\textwidth]{Images/T128_L8} \\
+$L(\gamma)\approx 10.43$ &
+$L(\gamma)\approx 16.96$ &
+$L(\gamma)\approx 16.77$ &
+$L(\gamma)\approx 16.63$ &
+$L(\gamma)\approx 16.4$\\ 
+  \includegraphics[width=0.18\textwidth]{Images/T8_L16} & 
+  \includegraphics[width=0.18\textwidth]{Images/T16_L16} & 
+  \includegraphics[width=0.18\textwidth]{Images/T32_L16} & 
+  \includegraphics[width=0.18\textwidth]{Images/T64_L16} & 
+  \includegraphics[width=0.18\textwidth]{Images/T128_L16} \\
+$L(\gamma)\approx 16.00$ &
+$L(\gamma)\approx 20.88$ &
+$L(\gamma)\approx 34.09$ &
+$L(\gamma)\approx 33.52$ &
+$L(\gamma)\approx 33.35$\\ 
+  \end{tabular}
+  \caption{Local minimizers  of \eqref{eq:constant_speed_min_relaxed} for $\mu$ the Lebesgue measure, which show the effect of the degree $t$ of the kernel $K_{t}$. Column-wise we increase $t=8,16,32,64,128$ and row-wise we increase $L=2,4,8,16$ where $\alpha = 0.2 L^{-5}$ and $N=20 L^{2}$. Note, the degree $t$ somehow steers the resolution of the curves. It appears that the spacing of the curves is bounded by $t^{-1}$.  Moreover the choice $t = c L$ leads to similar patterns. For instance, if $c=2$ the patterns are given mostly by horizontal or vertical line segments.}
+  \label{fig:t_experiment}
+\end{figure}
+
+
+\subsection{Optimization Algorithms}
+For optimization on Riemannian manifolds we refer to {\color{blue}[Todo: Refs]}, where the standard algorithms for constrained and unconstrained in Euclidean space are generalized to Riemannian manifolds. 
+
+Our algorithm of choice is the nonlinear conjugate gradient (CG) method, cf. Algorithm~\ref{alg:cg}. This algorithm fits into the class of descent methods. More precisely, given a sufficient smooth function $f:\mathbb X \to \mathbb R$ and a starting point $x^{(0)} \in \mathbb X$, then a sequence of points $x^{(k)} \in \mathbb X$ is generated accordingly to the update rule
+\begin{equation}
+  \label{eq:descent_method}
+  x^{(k+1)} := \gamma_{x^{(k)},d^{(k)}}(\alpha^{(k)}), \qquad k=0,1,\dots,
+\end{equation}
+where $d^{(k)}$ are descent directions, i.e.,
+\[
+  \langle \nabla_{\mathbb X} f(x^{(k)}), d^{(k)} \rangle <  0,
+\]
+and $\gamma_{x,d}:[0,\infty)\to \mathbb X$ is the geodesic curve satisfying
+\begin{equation}
+  \label{eq:geodesic_descent}
+  \gamma_{x,d}(0) = x, \qquad \dot \gamma_{x,d}(0) = d.
+\end{equation}
+For an appropriate choice of descent directions $d^{(k)}$ and step lengths $\alpha^{(k)}$, the sequence of points $x^{(k)}$ defined by  \eqref{eq:descent_method} converges towards a local minimizer $x_{*}$ of $f$.
+
+The advantage of the CG method is its simplicity together with fast convergence at low computational cost. 
+Especially for smooth high dimensional unconstrained optimization problems it has proven very efficient, cf. {\color{blue}[TODO: Referenzen]}. 
+Indeed, under suitable assumptions the sequence produced by Algorithm~\ref{alg:cg} converges superlinearly ($N\cdot\dim(\mathbb X)$-step quadratically) 
+towards a local minimum, cf. {\color{blue} [Diss, Section 3.3.2 and Theorem 3.27.]}.
+
+
+\begin{algorithm}[ht]
+  \caption{(\textbf{ CG Method with Restarts})}
+  \begin{algorithmic}
+    \State \textbf{Parameters:} maximal iterations $k_{\max} \in \mathbb N$
+    \State \textbf{Input:} twice differentiable function $f:\mathbb X^{N} \to [0,\infty)$,
+    initial point $x^{(0)} \in \mathbb X^{N}$
+    \State \textbf{Initialization:} $g^{(0)} := \nabla_{\mathbb X^{N}}f(x^{(0)})$, 
+    $d^{(0)}:= - g^{(0)}$, $r:=0$
+    \For{$k:=0,\dots,k_{\max}$}
+%    \State $\alpha^{(k)}_{0} :=
+%    \begin{cases}
+%      \left| \frac{ \langle d^{(k)}, g^{(k)} \rangle}{ \langle d^{(k)}, \mathrm{H}_{\mathbb X^{N}}f(x^{(k)}) d^{(k)}\rangle } \right|,
+%      & \langle d^{(k)}, \mathrm{H}_{\mathbb X^{N}}f(x^{(k)}) d^{(k)} \rangle \ne 0,\\
+%      1, & \text{ else}
+%    \end{cases}
+%    $
+%   % $ \alpha^{(k)}:= \mathrm{min} \big\{ \frac{\mathrm d}{\mathrm d t} f \circ \gamma_{x^{(k)},d^{(k)}}(t) = 0 \big\}$  (perform a line search)
+    \State $x^{(k+1)} := \gamma_{x^{(k)}, d^{(k)}}(\alpha^{(k)})$  where $\alpha^{(k)}$ is determined by Algorithm~\ref{alg:armijo}
+ 
+    \State
+    $
+    \tilde d^{(k)}:=  \dot \gamma_{x^{(k)}, d^{(k)}}(\alpha^{(k)})
+    %\in \Ts_{\zb  x^{(k+1)}}\M.
+    $
+    \State  $g^{(k+1)} := \nabla_{\mathbb X^{N}}f(x^{(k+1)})$
+    \State
+    $
+    \beta^{(k)}  :=  
+    \begin{cases}
+    \frac{ \langle \tilde d^{(k)}, \mathrm H_{\mathbb X^{N}} f(x^{(k+1)}) g^{(k+1)}\rangle }{\langle \tilde d^{(k)}, \mathrm H_{\mathbb X^{N}} f(x^{(k+1)}) \tilde
+        d^{(k)} \rangle},
+      & \langle \tilde d^{(k}, \mathrm H_{\mathbb X^{N}}f(x^{(k+1)}) \tilde d^{(k)} \rangle \ne 0,\\
+      0, & \text{ else}
+    \end{cases}
+    $
+    \State $d^{(k+1)}:=- g^{(k+1)} + \beta^{(k)} \tilde d^{(k)}$
+    \If{$\langle d^{(k+1)}, g^{(k+1)} \rangle > 0$ or $(k+1) \equiv r \mod N \mathrm{dim}(\mathbb X)$}
+    \State $d^{(k+1)} = - g^{(k+1)}$
+    \State $r := k+1$
+    \EndIf
+    \EndFor
+    \State \textbf{Output:} iteration sequence $x^{(0)},x^{(1)}, \dots \in \mathbb X^{N}$
+\end{algorithmic}
+\label{alg:cg}
+\end{algorithm}
+
+%Unfortunately, the determination of the exact step size $\alpha^{(k)}$ in  Algorithm~\ref{alg:cg} is practically prohibited. 
+%Therefore, several conditions have been proposed to guarantee the convergence towards a local minimum. We use the Armijo condition implemented in Algorithm~\ref{alg:armijo}.
+
+\begin{algorithm}[ht]
+\caption{(\textbf{Armijo Line Search})}
+\begin{algorithmic}
+\State \textbf{Parameters:} $0 < \mu < \tfrac12$, $0 < \tau < 1$, maximal iterations $k_{\max} \in \mathbb N$
+\State \textbf{Input:} smooth function $f:\mathbb X^{N} \to [0,\infty)$, starting point $x \in \mathbb X^{N}$, descent direction $d \in \mathrm T_{x}\mathbb X^{N}$
+\State \textbf{Initialization:}
+\[\alpha^{(0)} :=
+    \begin{cases}
+      \left| \frac{ \langle d, \nabla_{\mathbb X^{N}} f(x) \rangle}{ \langle d, \mathrm{H}_{\mathbb X^{N}}f(x) d\rangle } \right|,
+      & \langle d, \mathrm{H}_{\mathbb X^{N}}f(x) d \rangle \ne 0,\\
+      1, & \text{ else}
+    \end{cases}
+  \]
+\State $k:=0$
+\While{$f \circ \gamma_{x,d} (\alpha^{(k)}) - f(x) \ge \alpha^{(k)} \mu \langle \nabla_{\mathbb X^{N}} f(x), d \rangle$ and $k < k_{\max}$}
+\State $\alpha^{(k+1)} := \tau \alpha^{(k)}$
+\State $k:=k+1$
+\EndWhile
+\State \textbf{Output:} $\alpha^{(k)}$ (success if $k \le k_{\max}$)
+\end{algorithmic}
+\label{alg:armijo}
+\end{algorithm}
+
+\subsection{Implementation Details}
+
+We briefly summarize the main ingredients of our numerical implementation.
+
+For every  use-case $\mathbb X \in \{ \mathbb T^{d}, \mathbb S^{2}, \mathrm{SO(3)}, \mathcal G_{2,4}\}$ 
+we provide a local parameterization $h:\Omega \to \mathbb X$ with coordinates $y \in \Omega \subset \mathbb R^{d}$ 
+sucht that $h(\overline \Omega) = \mathbb X$. {\color{blue} The case $\mathbb X^{N}$ 
+is handled straightforward by considering $h_{N}:\Omega^{N} \to \mathbb X^{N}$ given by $h_{N}(y_{1},\dots,y_{N}) := (h(y_{1}),\dots,h(y_{N}))$.}
+
+Then for $y \in \Omega$ the Jacobian matrix
+\[
+  \mathrm D h(y) := \Big(  \frac{\partial}{\partial y_{1}} h(y), \dots, \frac{\partial}{\partial y_{d}} h(y) \Big)
+\]
+is non-singular. Thus, the vectors
+\[
+  e_{i}(y) := \frac{\partial}{\partial y_{i}} h(y), \qquad i=1,\dots,d,
+\]
+form a basis of the tangent space $\mathrm T_{h(y)}\mathbb X$ and the local parameterization $h$ induces the Riemannian matrix
+\[
+  G_{h}(y) :=  \mathrm D h(y)^{\top} \mathrm D h(y)
+\]
+Moreover, given a vector $v \in \mathrm T_{h(y)}\mathbb X$ by
+\[
+  v = \mathrm D h(y) w, \qquad w \in \mathbb R^{d}
+\]
+we can recover the coordinates $w$ by
+\[
+ w =   G_{h}^{-1}(y) \mathrm D h(y)^{\top} v.
+\]
+Let a smooth function $f:\mathbb X \to \mathbb R$ be given. Then the gradient of $f$ is given in local coordinates as
+\[
+  \nabla_{h} (f \circ h) (y) := G^{-1}_{h}(y) \nabla (f\circ h)(y),
+\]
+where
+\[
+  \nabla (f\circ h)(y) := \Big(\frac{\partial}{\partial y_{1}} (f\circ h)(y),\dots,\frac{\partial}{\partial y_{d}} (f\circ h)(y)\Big),
+\]
+is the usual gradient of $f\circ h$. This definition leads to the tangent vector 
+\[
+ \nabla_{\mathbb X}f (x) = \mathrm D h(y) \nabla_{h} (f\circ h) (y), \qquad x=h(y).
+\]
+The Hessian matrix of $f$ is given in local coordinates by
+\[
+  \mathrm H_{h} (f\circ h) (y) := \mathrm H (f \circ h) (y) - \mathrm N (f\circ h) (y)
+\]
+where
+\[
+  \mathrm H (f \circ h) (y) := \Big(\frac{\partial^{2}}{\partial y_{i} \partial y_{j}} (f\circ h)(y)\Big)_{i,j=1}^{d}
+\]
+is the usual Hessian of $f \circ h$ and
+\[
+   \mathrm N (f\circ h) (y) = \sum_{m=1}^{d} \big(\nabla (f\circ h)(y)\big)_{m} \Gamma_{h}^{m}(y)
+\]
+is a matrix encoding the normal derivatives using the Christoffel matrices
+\[
+  \Gamma_{h}^{m}(y) :=  \frac12  \Big( \sum_{l=1}^{d} \Big(\frac{\partial}{\partial y_{i}}\big(G_{h}(y)\big)_{j,l} + \frac{\partial}{\partial y_{j}}\big(G_{h}(y)\big)_{i,l} - \frac{\partial}{\partial y_{l}}\big(G_{h}(y)\big)_{i,j}\Big) \big(G_{h}^{-1}(y)\big)_{l,m} \Big)_{i,j=1}^{d}.
+\]
+Then the multiplication of the Hessian of $f$ in the tangent space reads as
+\[
+\big( \mathrm H_{\mathbb X} f (x) \big) v = \mathrm D h(y) G_{h}^{-1}(y) \mathrm H_{h} (f\circ h) (y) \mathrm G_{h}^{-1}(y) \mathrm D h(y)^{\top} v, \qquad v \in \mathrm T_{x}\mathbb X, \qquad x=h(y).
+\]
+{\color{blue} For the approximation of the usual Hessian we shall use the finite difference quotient
+\[
+  \mathrm H(f \circ h)(y) \approx \frac{\|w\|_{2}}{t} \Big( (f \circ h)\big(y + \tfrac{t}{\|w\|_{2}} w\big) - (f\circ h)(y)\Big) 
+\]
+in our algorithms, with $t=10^{-8}$.}
+
+
+Finally, we shall provide formulas for the geodesics $\gamma_{x,d}:[0,\infty)\to \mathbb X$ with starting point $x \in \mathbb X$ and direction $d \in \mathrm T_{x}\mathbb X$, cf. \eqref{eq:geodesic_descent}. Note, that we can recover the local coordinates from $y=h^{-1}(x)$.  
+
+
+\textbf{Torus.}
+%The torus $\mathbb T^{d}$ is embedded in $\mathbb R^{2d}$ by the local parameterization 
+%\begin{equation}
+%  \label{eq:Td_param}
+%  h(\alpha) = %(\sin(\alpha_{1}),\cos(\alpha_{1}),\dots,\sin(\alpha_{d}),\cos(\alpha_{d})), %\qquad \alpha := (\alpha_{1},\dots,\alpha_{d}) \in \mathbb R^{d}.
+%\end{equation}
+%From $h(\alpha)=h(\alpha + 2\pi k)$, $k \in \mathbb Z^{d}$, we infer $\mathbb T^{d} \cong \mathbb R^{d} / \mathbb Z^{d}$. Hence, the torus $\mathbb T^{d}$ can be considered as Euclidean space $\mathbb R^{d}$ where points are $2\pi$-periodically identified. Therefore, we shall forget about the actual parameterization \eqref{eq:Td_param} and perform any geometric operation in local coordinates, i.e., in  Euclidean space $\mathbb R^{d}$. 
+Since $\mathbb T^{d} \cong \mathbb R^{d} / \mathbb Z^{d}$  we can apply the standard optimization methods for Euclidean space $\mathbb R^{d}$. That means we use the local parameterization $h:\mathbb R^{d} \to \mathbb R^{d}$ with $h(y) = y$ and the geodesic with starting point $x \in \mathbb R^{d}$ and direction $d \in \mathbb R^{d}$ is given by
+\[
+  \gamma_{x,d}(t) = x + t d,  \qquad t \in [0,\infty).
+\]
+The function
+\[
+  E_{\mu}(x_{1},\dots,x_{N}) = \sum_{l \in ([-t,t] \cap \mathbb Z)^{d}} \lambda_{l} \Big| \mu_{l} - \frac 1N \sum_{k=1}^{N} \mathrm{e}^{2\pi \mathrm i \langle x_{k}, l\rangle  }\Big|^{2}
+\]
+and its gradient $\nabla E_{\mu}$
+%\[
+%  \nabla E_{\mu}(x_{1},\dots,x_{N}) = \big(\tfrac{\partial}{\partial x_{i,j}} E_{\mu}(x_{1},\dots,x_{N}) %\big)_{i=1,\dots,N; j=1,\dots,d}
+%\]
+%and the multiplication of a vector $v \in \mathbb R^{N d}$ with the Hessian
+%\[
+%  \mathrm{H}_{(\mathbb R^{d})^{N}} E_{\mu}(x_{1},\dots,x_{N}) v = \big( %\sum_{m=1}^{N}\sum_{n=1}^{d} v_{m,n} \tfrac{\partial^{2}}{\partial %x_{i,j}\partial x_{m,n}} E_{\mu}(x_{1},\dots,x_{N}) \big)_{i=1,\dots,N; %j=1,\dots,d}
+%\]
+can be evaluated in $\mathcal O(t^{d} \log(t) + N)$ arithmetic operations, cf. {\color{blue}[Diss, Section 5.2.1]}.
+
+The penalty term
+\[
+  F_{\alpha,L}(x_{1},\dots,x_{N}) = \alpha \sum_{i=1}^{N}  \big(\|x_{k-1}-x_{k}\|_{2} - \tfrac{L}{N}\big)^{2}
+\]
+and its gradient $\nabla F_{\alpha,L}$ 
+%\[
+%\nabla F_{\alpha,L}(x_{1},\dots,x_{N}) = \big(\tfrac{\partial}{\partial x_{i,j}} %F_{\alpha,L}(x_{1},\dots,x_{N}) \big)_{i=1,\dots,N; j=1,\dots,d}
+%\]
+can be evaluated in $\mathcal O(N)$.
+
+\textbf{Sphere.} The sphere $\mathbb S^{2}$ is parameterized by
+\[
+  h(\theta,\varphi) = (\sin(\theta) \sin(\varphi), \sin(\theta) \cos(\varphi), \cos(\theta)), \qquad (\theta,\varphi) \in [0,\pi]\times [0,2\pi).
+\]
+Restricting the domain of $h$ to $\Omega := (0,\pi)\times (0,2\pi)$ we have a local parameterization with $h(\overline \Omega) = \mathbb S^{2}$ and inverse
+\[
+  h^{-1}(x) :=  \begin{pmatrix}
+    \arccos(x_{3}) \\
+    2 \arctan \Big( x_{2}  \Big(x_{1} - \sqrt{x_{1}^{2}+x_{2}^{2}}\Big)^{-1} \Big) + \pi
+  \end{pmatrix}
+  , \qquad x \in h(\Omega).
+\]
+The geodesic with starting point $x \in \mathbb S^{2}$ and direction $d \in \mathrm T_{x}\mathbb S^{2}$ is given by
+\[
+  \gamma_{x,d}(t) := \cos(t \|d\|_{2}) x + \sin(t \|d\|_{2}) \tfrac{d}{\|d\|_{2}}, \qquad t \in [0,\infty).
+\]
+
+The function
+\[
+  E_{\mu}(\theta_{1},\varphi_{1},\dots,\theta_{N},\varphi_{N}) = \sum_{m=0}^{t} \sum_{n=-m}^{m} \lambda_{m}^{n} \Big| \mu_{m}^{n} - \frac 1N \sum_{k=1}^{N} Y_{m}^{n}(\theta_{k},\varphi_{k})\Big|^{2}
+\]
+and its gradient $\nabla E_{\mu}$ can be evaluated in $\mathcal O(t^{2} \log^{2}(t) + N)$ arithmetic operations, cf. {\color{blue}[Diss, Section 5.2.2]}.
+
+The penalty term
+\[
+  F_{\alpha,L}(\theta_{1},\varphi_{1},\dots,\theta_{N},\varphi_{N}) = \alpha \sum_{i=1}^{N} \big(  \mathrm{dist}(h(\theta_{k-1},\varphi_{k-1}),h(\theta_{k},\varphi_{k})) - \tfrac{L}{N}\big)^{2}
+\]
+with
+\[
+  \mathrm{dist}(h(\theta_{k-1},\varphi_{k-1}),h(\theta_{k},\varphi_{k})) = \arccos \Big( \cos(\theta_{k-1}) \cos(\theta_{k}) - \cos(\varphi_{k-1}-\varphi_{k}) \sin(\theta_{k-1})\sin(\theta_{k})\Big)
+\]
+and its gradient $\nabla F_{\alpha,L}$ can be evaluated in $\mathcal O(N)$.
+
+\textbf{Rotation Group.} The rotation group $\mathrm{SO(3)}$ is parameterized by
+\[
+  h(\varphi,\theta,\phi) = R(e_{3},\varphi) R(e_{2},\theta) R(e_{3},\phi), \qquad (\varphi,\theta,\phi) \in [0,2\pi)\times [0,\pi] \times [0,2\pi),
+\]
+where 
+\[
+  R(r,\omega) = (1-\cos(\omega))rr^{\top} + 
+\begin{pmatrix}
+ \cos(\omega) & - r_{3} \sin(\omega) & r_{2} \sin(\omega) \\
+r_{3} \sin(\omega) & \cos(\omega) & -r_{1} \sin(\omega) \\
+- r_{2} \sin(\omega) &  r_{1} \sin(\omega) & \cos(\omega)  \\
+\end{pmatrix}
+\]
+is the rotation matrix with rotation axis $r$ and rotation angle $\omega$. Restricting the domain of $h$ to $\Omega := (0,2\pi) \times (0,\pi) \times (0,2\pi)$ we have a local parameterization with $h(\overline \Omega)= \mathrm{SO(3)}$ and inverse
+\[
+  h^{-1}(R) = 
+\begin{pmatrix}
+  2 \arctan( R_{2,3} \Big(R_{1,3} - \sqrt{R_{1,3}^{2}+R_{2,3}^{2}}\Big)^{-1} \Big) + \pi \big) \\
+  \arccos(R_{3,3})\\
+  2 \arctan( R_{3,2} \Big(- R_{3,1} - \sqrt{R_{3,1}^{2}+R_{3,2}^{2}}\Big)^{-1} \Big) + \pi \big) \\
+\end{pmatrix}, \qquad R \in h(\Omega).
+\]
+The geodesic with starting point $R \in \mathrm{SO(3)}$ and direction $D \in \mathrm T_{x}\mathrm{SO(3)}$ is given by
+\[
+  \gamma_{R,D}(t) :=  R \exp( t R^{\top} V), \qquad t \in [0,\infty),
+\]
+where $\exp:\mathbb R^{3\times 3} \to \mathbb R^{3\times 3}$ is the matrix exponential defined by
+\[
+  \exp(A) := \sum_{k=0}^{\infty} \frac{A^{k}}{k!}.
+\]
+
+The function
+\[
+  E_{\mu}(\varphi_{1},\theta_{1},\phi_{1},\dots,\varphi_{N},\theta_{N},\phi_{N}) = \sum_{m=0}^{t} \sum_{n=-m}^{m} \sum_{n'=-m}^{m}\lambda_{m}^{n,n'} \Big| \mu_{m}^{n,n'} - \frac 1N \sum_{k=1}^{N} D_{m}^{n,n'}(\varphi_{k},\theta_{k},\phi_{k})\Big|^{2}
+\]
+and its gradient $\nabla E_{\mu}$ can be evaluated in $\mathcal O(t^{3} \log^{2}(t) + N)$ arithmetic operations, cf. {\color{blue}[Diss, Section 5.2.3]}.
+
+The penalty term
+\[
+  F_{\alpha,L}(\varphi_{1},\theta_{1},\phi_{1},\dots,\varphi_{N},\theta_{N},\varphi_{N}) = \alpha \sum_{i=1}^{N} \big(  \mathrm{dist}(h(\varphi_{k-1},\theta_{k-1},\phi_{k-1}),h(\varphi_{k},\theta_{k},\phi_{k})) - \tfrac{L}{N}\big)^{2}
+\]
+with
+\[
+  \begin{aligned}
+    & \mathrm{dist}(h(\varphi_{k-1},\theta_{k-1},\phi_{k-1}),h(\varphi_{k},\theta_{k},\phi_{k})) \\
+    =&  {\tiny 2 \arccos\left| \cos\Big(\tfrac{\varphi_{k-1}-\varphi_{k}}{2}\Big) \cos\Big(\tfrac{\theta_{k-1}-\theta_{k}}{2}\Big)  \cos\Big(\tfrac{\phi_{k-1}-\phi_{k}}{2}\Big) - \sin\Big(\tfrac{\varphi_{k-1}-\varphi_{k}}{2}\Big) \cos\Big(\tfrac{\theta_{k-1}+\theta_{k}}{2}\Big)  \sin\Big(\tfrac{\phi_{k-1}-\phi_{k}}{2}\Big) \right|}
+\end{aligned}
+\]
+and its gradient $\nabla F_{\alpha,L}$ can be evaluated in $\mathcal O(N)$.
+
+\textbf{Grassmannian.} Since $\mathcal G_{2,4} \cong \mathbb S^{2} \times \mathbb S^{2} / \{\pm 1\}$ we can apply the optimization methods for the sphere $\mathbb S^{2}$. That means, let $\tilde h:[0,\pi]\times [0,2\pi) \to \mathbb S^{2}$ be the parameterization of the sphere $\mathbb S^{2}$, cf. [TODO],  we parameterize the double sphere $\mathbb S^{2} \times \mathbb S^{2}$ by
+
+\[
+%  h(\theta_{1},\varphi_{1},\theta_{2},\varphi_{2}) = \begin{pmatrix}
+%    \sin(\theta_{1}) \sin(\varphi_{1}) \\
+%    \sin(\theta_{1}) \cos(\varphi_{1}) \\
+%    \cos(\theta_{1})\\
+%    \sin(\theta_{2}) \sin(\varphi_{2}) \\
+%    \sin(\theta_{2}) \cos(\varphi_{2}) \\
+%    \cos(\theta_{2})
+%  \end{pmatrix}
+   h(\theta_{1},\varphi_{1},\theta_{2},\varphi_{2}) = (\tilde h(\theta_{1},\varphi_{1}), \tilde h(\theta_{2},\varphi_{2})),  
+  , \qquad (\theta_{1},\varphi_{1},\theta_{2},\varphi_{2}) \in ([0,\pi]\times [0,2\pi))^{2}.
+\]
+Restricting the domain of $h$ to $\Omega := ((0,\pi)\times (0,2\pi))^{2}$ we have a local parameterization with $h(\overline \Omega) = \mathbb S^{2}\times \mathbb S^{2}$ and inverse
+\[
+  h^{-1}(x) :=
+  %\begin{pmatrix}
+  %  \arccos(x_{3}) \\
+  %  2 \arctan \Big( x_{2}  \Big(x_{1} - \sqrt{x_{1}^{2}+x_{2}^{2}}\Big)^{-1} \Big) + \pi\\
+  %  \arccos(x_{6}) \\
+  %  2 \arctan \Big( x_{5}  \Big(x_{4} - \sqrt{x_{4}^{2}+x_{5}^{2}}\Big)^{-1} \Big) + \pi\\
+  %\end{pmatrix}
+    \begin{pmatrix}
+      \tilde h^{-1}(x_{1})\\
+      \tilde h^{-1}(x_{2})
+    \end{pmatrix}
+  , \qquad x = (x_{1},x_{2}) = \in h(\Omega).
+\]
+The geodesic with starting point $x=(x_{1}, x_{2}) \in \mathbb S^{2} \times \mathbb S^{2}$ and direction $d = (d_{1},d_{2}) \in \mathrm T_{x_{1}}\mathbb S^{2} \times \mathrm T_{x_{2}}\mathbb S^{2}$ is given by
+\[
+  \gamma_{x,d}(t) :=
+%  \begin{pmatrix}
+ (   \cos(t \|d_{1}\|_{2}) x_{1} + \sin(t \|d_{1}\|_{2}) \tfrac{d_{1}}{\|d_{1}\|_{2}},
+    \cos(t \|d_{2}\|_{2}) x_{2} + \sin(t \|d_{2}\|_{2}) \tfrac{d_{2}}{\|d_{2}\|_{2}})
+    % \end{pmatrix}
+    , \qquad t \in [0,\infty).
+\]
+
+The function
+\[
+  \begin{aligned}
+    &E_{\mu}(\theta_{1},\varphi_{1},\dots,\theta_{2N},\varphi_{2N}) \\
+    = &\sum_{m_{1},m_{2}=0}^{t} \sum_{n_{1}=-m_{1}}^{m_{1}} \sum_{n_{2}=-m_{2}}^{m_{2}} \lambda_{m_{1},m_{2}}^{n_{1},n_{2}} \Big| \mu_{m_{1},m_{2}}^{n_{1},n_{2}} - \frac 1N \sum_{k=1}^{N} Y_{m_{1}}^{n_{1}}(\theta_{2k-1},\varphi_{2k-1}) Y_{m_{2}}^{n_{2}}(\theta_{2k},\varphi_{2k})\Big|^{2}
+  \end{aligned}
+\]
+and its gradient $\nabla E_{\mu}$ can be evaluated in $\mathcal O(t^{4} \log^{2}(t) + N)$ arithmetic operations, cf. {\color{blue}[Discrepanz paper]}.
+
+The penalty term
+\[
+  F_{\alpha,L}(\theta_{1},\varphi_{1},\dots,\theta_{2N},\varphi_{2N}) = \alpha \sum_{i=1}^{N} \big(  \mathrm{dist}(h(\theta_{2k-3},\varphi_{2k-3},\theta_{2k-2},\varphi_{2k-2}),h(\theta_{2k-1},\varphi_{2k-1},\theta_{2k},\varphi_{2k})) - \tfrac{L}{N}\big)^{2}
+\]
+with
+\[\begin{aligned}
+    &\mathrm{dist}(h(\theta_{2k-3},\varphi_{2k-3},\theta_{2k-2},\varphi_{2k-2}),h(\theta_{2k-1},\varphi_{2k-1},\theta_{2k},\varphi_{2k}))\\
+    = & \Big( \arccos \Big( \cos(\theta_{2k-3}) \cos(\theta_{2k-1}) - \cos(\varphi_{2k-3}-\varphi_{2k-1}) \sin(\theta_{2k-3})\sin(\theta_{2k-1})^{2}\Big)\\
+   & +   \arccos \Big( \cos(\theta_{2k-3}) \cos(\theta_{2k-1}) - \cos(\varphi_{2k-3}-\varphi_{2k-1}) \sin(\theta_{2k-3})\sin(\theta_{2k-1})\Big)^{2}\Big)^{\frac12}
+  \end{aligned}
+\]
+and its gradient $\nabla F_{\alpha,L}$ can be evaluated in $\mathcal O(N)$.
+
+
+\subsection{Finding good initial points/curves}
+
+Since the objective function in \eqref{eq:constant_speed_min} is highly non-convex, the main problem is to find good initial points $x_{k} \in \mathbb X$.
+
+Our heuristic is as follows. We start with a curve $\gamma:[0,1]\to \mathbb X$ of small length $L(\gamma)$ and solve the problem \eqref{eq:constant_speed_min_relaxed} for certain $\alpha$ in dependency of the parameter $L$.
+
+\textbf{2d-torus.}
+We choose the following dependencies $\alpha = L^{-4}$, $N =11 L^{2}$, $t=3 L$. We start with a circle of radius $r=\frac13$ and solve \eqref{eq:constant_speed_min_relaxed} for $L=3$ using the conjugate gradient method. The obtained minimizer is used as initial point for the next minimization problem, where the parameter $L$ is doubled. The procedure is stopped when the twice the length of the minimizer bigger than the prescribed length.
+
+\section{Curves integrating polynomials on $\mathbb S^{d}$} \label{sec:intro}
+
+We are going to construct a curve $\gamma_{N}:[0,1]\to \mathbb S^{d}$ of constant speed $\sim N^{d-1}$ and a probability measure $\omega_{N}$ on the interval $[0,1]$, such that the weighted push-forward  $(\gamma_{N})_{*} \mathrm d \omega_{N}$ integrates exactly all polynomials of degree $N$ on the sphere $\mathbb S^{d}$, i.e.,
+\begin{equation}
+  \label{eq:quad_curve_Sd}
+  \int_{\mathbb S^{d}} p(x) \mathrm d \sigma_{\mathbb S^{d}}(x) = \int_{0}^{1} p( \gamma_{N}(t)) \mathrm d \omega_{N}(t), \qquad p \in \mathrm{Pol}_{N}(\mathbb S^{d}). 
+\end{equation}
+Recall, that the integral of a continuous function $f:\mathbb S^{d}\to \mathbb C$ can be computed by integrating inductively along the coordinates, i.e.,
+\[
+  \int_{\mathbb S^{d}} f(x) \mathrm d \sigma_{\mathbb S^{d}}(x) = \int_{0}^{\pi} c_{d} \sin(\theta)^{d-1} \int_{\mathbb S^{d-1}} f(\cos(\theta),\sin(\theta)\tilde x) \mathrm d \sigma_{\mathbb S^{d-1}}(\tilde x)   \mathrm d \theta,
+\]
+where $c_{d} := \big( \int_{0}^{\pi} \sin(\theta)^{d-1} \mathrm d \theta \big)^{-1} $. Note the measures $\sigma_{\mathbb S^{d}}$ are normalized.
+
+Now, let us consider a quadrature formula on the sphere $\mathbb S^{d-1}$ with  nodes  $\tilde x_{i} \in \mathbb S^{d-1}$ and weights $a_{i} > 0$, $i=1,\dots, M \sim N^{d-1}$, i.e.,
+\[
+  \int_{\mathbb S^{d-1}} p(x) \mathrm d \sigma_{\mathbb S^{d-1}}(x) = \sum_{i=1}^{M} a_{i} p(\tilde x_{i}), \qquad p \in \mathrm{Pol}_{N}(\mathbb S^{d-1}).   
+\]
+Then we define $\gamma_{N}:[0,1]\to\mathbb S^{d}$ for $t \in [(i-1)/M,i/M]$, $i=1,\dots,M$, by
+\[
+  \gamma_{N}(t) := \gamma_{N,i}(2\pi M t) 
+\]
+where
+\[
+  \gamma_{N,i}(\alpha) := (\cos(\alpha), \sin(\alpha) \tilde x_{i}), \quad \alpha \in [0,2\pi],\qquad ,i=1,\dots,M.
+\]
+The curve is well-defined and closed, since we have $\gamma_{N,1}(0) = (1,0,\dots,0) = \gamma_{N,i}(2\pi)  = \gamma_{N,i+1}(0) = \gamma_{N,i}(2\pi)$, $j=1,\dots,M-1$.  Furthermore, it is straightforward to check, that $\gamma_{N}(t)$ has constant speed
+\[
+ \| \dot \gamma_{N}(t)\|_{2} = \| \dot \gamma_{N,i}(2 \pi M t)\|_{2}  =2\pi M \sim N^{d-1}, \qquad i=1,\dots,M.
+\]
+Additionally, we define the density $w_{N}:[0,1]\to \mathbb \R_{+}$  for $t \in [(i-1)/M,i/M]$, $i=1,\dots,M$, by
+\[
+  w_{N}(t) := w_{N,i}(2\pi M t) 
+\]
+where
+\[
+  w_{N,i}(\alpha) := a_{i} c_{d}  \pi  M|\sin(\alpha)|^{d-1}, \quad \alpha \in [0,2\pi],\qquad i=1,\dots,M.
+\]
+The density is well-defined, since $w_{N,1}(0) = 0 = w_{N,i}(2\pi) = w_{N,i+1}(0) = w_{N,M}(2\pi)$, $i=1,\dots,M-1$. Moreover, $w_{N}$ is by definition of the constant $c_{d}$ and weights $a_{i}$, indeed a probability density
+\[
+  \begin{aligned}
+    \int_{0}^{1} w_{N}(t) \mathrm d t &  = \sum_{i=1}^{M} \int_{\frac{i-1}{M}}^{\frac{i}{M}}  w_{N,i}(2\pi M t) \mathrm d t =
+    \frac{1}{2\pi M}  \sum_{i=1}^{M} \int_{0}^{2\pi}  w_{N,i}(\alpha) \mathrm d \alpha = 
+   c_{d} \frac{1}{2} \sum_{i=1}^{M} a_{i} \int_{0}^{2\pi}  |\sin(\theta)|^{d-1} \mathrm d \theta = 1,
+   \end{aligned}
+ \]
+ where we substitute in the second equation $\alpha =2 \pi M t$. Similarly, for $p \in \mathrm{Pol}_{N}(\mathbb S^{d})$ we verify 
+\[
+  \begin{aligned}
+    \int_{0}^{1} p(\gamma_{N}(t)) w_{N}(t) \mathrm d t
+    =&  \sum_{i=1}^{M} \int_{\frac{i-1}{M}}^{\frac i M} p(\gamma_{N,i}(t)) w_{N,i}(t) \mathrm dt \\
+    =&  \sum_{i=1}^{M} \int_{\frac{i-1}{2M}}^{\frac i M} p(\gamma_{N,i}(2 \pi M t)) w_{N,i}(2\pi M t) \mathrm dt \\
+    =&   \int_{0}^{2\pi}  \frac{1}{2\pi M} \sum_{i=1}^{M}  p(\gamma_{N,i}(\alpha)) w_{N,i}(\alpha) \mathrm d \alpha\\
+%    \int_{0}^{2\pi}  \frac{1}{2\pi M} \sum_{i=1}^{M}  p(\gamma_{N,i}(\alpha)) w_{N,i}(\alpha) \mathrm d \alpha
+    =  & \frac12\int_{0}^{2\pi}  c_{d} |\sin(\alpha)|^{d-1} \sum_{i=1}^{M} a_{i}  p(\cos(\alpha),\sin(\alpha)\tilde x_{i}) \mathrm d \alpha \\
+    =  & \frac12\int_{0}^{\pi}  c_{d} |\sin(\alpha)|^{d-1} \sum_{i=1}^{M} a_{i}  p(\cos(\alpha),\sin(\alpha)\tilde x_{i}) \mathrm d \alpha \\
+    +  & \frac12\int_{0}^{\pi}  c_{d} |\sin(\alpha+\pi)|^{d-1} \sum_{i=1}^{M} a_{i}  p(\cos(\alpha+\pi),\sin(\alpha+\pi)\tilde x_{j}) \mathrm d \alpha \\
+    =  & \frac12\int_{0}^{\pi}  c_{d} |\sin(\alpha)|^{d-1} \sum_{i=1}^{M} a_{i}  p(\cos(\alpha),\sin(\alpha)\tilde x_{i}) \mathrm d \alpha \\
+    +  & \frac12\int_{0}^{\pi}  c_{d} |\sin(\alpha)|^{d-1} \sum_{i=1}^{M} a_{i}  p(-\cos(\alpha),-\sin(\alpha)\tilde x_{i}) \mathrm d \alpha \\
+  \end{aligned}
+\]
+Without loss of generality we can assume that $p$ is a homogeneous polynomial of degree $n \le N$, i.e., $p(r x) =r^{n} p(x).$ Hence, we arrive at
+\[
+  \begin{aligned}
+    \int_{0}^{1} p(\gamma_{N}(t)) w_{N}(t) \mathrm d t
+   =  & \frac12\int_{0}^{\pi}  c_{d} |\sin(\alpha)|^{d-1} \sum_{i=1}^{M} a_{i}  p(\cos(\alpha),\sin(\alpha)\tilde x_{i}) \mathrm d \alpha \\
+    + & (-1)^{n} \frac12\int_{0}^{\pi}  c_{d} |\sin(\alpha)|^{d-1} \sum_{i=1}^{M} a_{i}  p(\cos(\alpha),\sin(\alpha)\tilde x_{i}) \mathrm d \alpha \\
+  \end{aligned} 
+\]
+Using that the nodes $\tilde x_{i}$ and weights $w_i$ form a quadrature and that for fixed $\alpha \in [0,2\pi]$ the function $\tilde x \mapsto p(\cos(\alpha), \sin(\alpha) \tilde x)$ is a polynomial of degree at most $N$ on $\mathbb S^{d-1}$, we arrive at
+\[
+  \begin{aligned}
+    \int_{0}^{1} p(\gamma_{N}(t)) w_{N}(t) \mathrm d t
+   =  & \frac{1+(-1)^{n}}{2}\int_{0}^{\pi}  c_{d} |\sin(\alpha)|^{d-1} \int_{\mathbb S^{d-1}}  p(\cos(\alpha),\sin(\alpha)\tilde x) \mathrm d\sigma_{\mathbb S^{d-1}}(x) \mathrm d \alpha. 
+  \end{aligned}
+\]
+Now, the assertion \eqref{eq:quad_curve_Sd} follows from 
+\[
+  \int_{\mathbb S^{d}} p(x) \mathrm d \sigma_{\mathbb S^{d}}(x) =
+  \begin{cases}
+    0, &  n \equiv 1 \mod 2,\\
+  \int_{0}^{\pi}  c_{d} |\sin(\alpha)|^{d-1} \int_{\mathbb S^{d-1}}  p(\cos(\alpha),\sin(\alpha)\tilde x) \mathrm d\sigma_{\mathbb S^{d-1}}(x), & n \equiv 0 \mod 2.     
+  \end{cases}
+\]
+
+\section{Curves integrating polynomials on $\mathrm{SO(3)}$} \label{sec:intro}
+
+% ------------------------------------------------------------------------
+We are going to construct a curve $\gamma_{N}:[0,1] \to \mathrm{SO(3)}$ of constant speed $N^{2}$ and a probability measure $\omega_{N}$ on the interval $[0,1]$, such that the weighted push-forward $(\gamma_{N})_{*}\mathrm d \omega_{N}$ integrates exactly all polynomials of degree $N$ on the rotation group $\mathrm{SO(3)}$, i.e.,
+\begin{equation}
+   \label{eq:quad_curve_Sd}
+  \int_{\mathrm{SO(3)}} p(x) \mathrm d\sigma_{\mathrm{SO(3)}}(x) = \int_{0}^{1} p(\gamma_{N}(t)) \mathrm d\omega_{N}(t), \qquad p \in \mathrm{Pol}_{N}(\mathrm{SO(3)}).
+\end{equation}
+
+We shall use the well-known fact that the sphere $\mathbb S^{3}$ is a double covering of $\mathrm{SO(3)}$. That is, there is a surjective two-to-one mapping $r: \mathbb S^{3} \to \mathrm{SO(3)}$ satisfying $r(x) = r(-x)$, $x \in \mathbb S^{3}$. Moreover, we know from {\color{blue}[cite: A unified approach to scattered data approximation on S3 and SO(3)]}  that $r:\mathbb S^{3} \to \mathrm{SO(3)}$ is a local isometry, i.e., it respects the Riemannian structures, implying
+the relations 
+\[
+  \begin{aligned}
+    d_{\mathbb S^{3}}(x_{1},x_{2}) & = \frac{1}{2} d_{\mathrm{SO(3)}}(r(x_{1}),r(x_{2})), \qquad x_{1},x_{2} \in \mathbb S^{3}, \quad d_{\mathbb S^{3}}(x_{1},x_{2}) \le \frac{\pi}{2},\\
+%   \sigma_{\mathbb S^{3}}(r^{-1}(B)) & = \sigma_{\mathrm{SO(3)}}(B), \qquad B \subset \mathrm{SO(3)}. 
+    \frac 12 r_{*} \sigma_{\mathbb S^{3}}(B) & =  \sigma_{\mathrm{SO(3)}}(B),\qquad B \subset \mathrm{SO(3)}, \quad \mathrm{\diam}(B) = \sup_{x,y \in B} d_{\mathrm{SO(3)}}(x,y) \le \frac{\pi}{4},\\
+%    \int_{\mathrm{SO(3)}} f(x) \mathrm d (r_{*} \sigma_{\mathbb S^{3}})(x) & = \int_{\mathbb S^{3}} f \circ r(x) \mathrm d \sigma_{\mathbb S^{3}}(x)
+  \end{aligned}
+\]
+and maps the even polynomials of degree $2N$ on $\mathbb S^{3}$ to polynomials of degree $N$ on $\mathrm{SO(3)}$, and vice versa, i.e.,
+\[
+p \in \mathrm{Pol}_{2N}(\mathbb S^{3})\;: \quad p(x) = p(-x),\; x \in \mathbb S^{3}  \qquad \Leftrightarrow \qquad p \circ r^{-1} \in \mathrm{Pol}_{N}(\mathrm{SO(3)}).
+\]
+Now, let $\tilde \gamma_{N}:[0,1]\to \mathbb S^{3}$ and $\tilde \omega_{N}$ be given as in {[\color{blue} Section $\mathbb S^{d}$]}  for $d=3$ ,i.e., $(\tilde \gamma_{N})_{*} \mathrm d \tilde \omega_{N}$ is an $N$-cubature of speed $\sim N^{2}$ for the sphere $\mathbb S^{3}$.
+
+Then for the push-forward of curve
+\[
+  \gamma_{N}:[0,1] \to \mathrm{SO(3)},\qquad \gamma_{N}(t) := r \circ  \tilde \gamma_{N}(t),
+\]
+for the measure $\omega_{N} = \frac12 \tilde \omega_{N}$ we obtain with $p :=\tilde p \circ r^{-1}$, $\tilde p \in \mathrm{Pol}_{2N}(\mathbb S^{3})$, $\tilde p(x)=\tilde p(-x)$, that
+\[
+  \begin{aligned}
+  \int_{\mathrm{SO(3)}} p(x) \mathrm d \sigma_{\mathrm{SO(3)}}(x) 
+& =  \int_{\mathrm{SO(3)}} \tilde p \circ r^{-1}(x) \mathrm d \sigma_{\mathrm{SO(3)}}(x) \\
+&=  \frac12 \int_{\mathbb S^{3}} \tilde p (x) \circ r^{-1} \circ r (x) \mathrm d \sigma_{\mathbb S^{3}}(x) \\
+&=  \frac12 \int_{\mathbb S^{3}} \big(\tilde p (x)+ \tilde p(-x)\big) \mathrm d \sigma_{\mathbb S^{3}}(x) \\
+& = \int_{0}^{1} \tilde p \circ \tilde \gamma_{N} (t) \mathrm d \tilde \omega_{N}(t)\\
+& = \frac12 \int_{0}^{1} \tilde p \circ r^{-1} \circ r \circ \tilde \gamma_{N} (t) \mathrm d \tilde \omega_{N}(t)\\
+& = \int_{0}^{1} p \circ \gamma_{N} (t) \mathrm d \omega_{N}(t).
+\end{aligned}
+\]
+Hence,the property \eqref{eq:quad_curve_Sd} is fulfilled, where the speed of $\gamma_{N}$ is $\sim N^{2}$.
+
+\section{Discrepancy Kernel on $\mathbb T^{2}$}
+Emmbeding the the torus $\mathbb T^{2}$ in $\mathbb R^{4}$ by
+\[
+  x(\alpha_{1},\alpha_{2}) = (\sin(\alpha_{1}),\cos(\alpha_{1}),\sin(\alpha_{2}),\cos(\alpha_{2})), \qquad \alpha_{1},\alpha_{2} \in [0,2\pi), 
+\]
+the kernel
+\[
+  K_{p}(x,y) = 2^{-p} \|x-y\|_{2}^{p} = (1-\tfrac 12\cos(\alpha_{1}-\beta_{1})-\tfrac 12\cos(\alpha_{2}-\beta_{2}))^{\frac{p}{2}} 
+\]
+admits for $p>-2$ the Fourier expansion
+\[
+  K_{p}(x,y) =\sum_{n \in \mathbb Z^{2}} a_{|n_{1}|,|n_{2}|}(p) \mathrm{e}^{i \mathrm{i} \langle n, \alpha-\beta\rangle}.
+\]
+\begin{thm}\label{thm:G24}
+For $p>-2$, and $n_{1},n_{2} \ge 0$ it holds
+\begin{equation}\label{eq:a alpha}
+%  a_{n_{1},n_{2}}(p) = \frac{ 4^{-(n_{1}+n_{2})}\Gamma(n_{1}+n_{2}-\frac p2)}{\Gamma(1+n_{1})\Gamma(1+n_{2})\Gamma(-\frac p2)}
+  a_{n_{1},n_{2}}(p) =  4^{-(n_{1}+n_{2})} {{-\frac{p}{2}-1}\choose{n_{1}, n_{2}}} \;\pFq{4}{3}{\tfrac{n_{1}+n_{2}+1}{2},\tfrac{n_{1}+n_{2}+2}{2},\tfrac{n_{1}+n_{2}}{2}-\tfrac{p}{4},\tfrac{n_{1}+n_{2}+1}{2}-\tfrac{p}{4}}{n_{1}+n_{2}+1,n_{1}+1,n_{2}+1}{1}.
+\end{equation}
+In particular, if $p\not\in 2\N$, then 
+\begin{equation} \label{eq:dec-G24}
+|a_{|n_{1},|n_{2}|}(p)|= \frac{1}{\pi} \bigg|\frac{\Gamma(\frac{p}{2}+1)}{\Gamma(-\frac{p}{2})}\bigg|\|n\|^{-(p+2)} (1+o(1)),
+\qquad n \in \mathbb Z^{2},
+\end{equation}
+and the series terminates if $p\in 2\N$. 
+\end{thm}
+\begin{proof}
+Similar to the proof for the Grassmannian case.
+\end{proof}
+
+For $d=1$ we have for
+\[
+  K_{p}(x,y) = 2^{-\frac p2}\|x-y\|_{2}^{p} = (1-\cos(\alpha-\beta))^{\frac p2} = \sum_{n \in \mathbb Z} a_{|n|}(p) \mathrm{e}^{\mathrm i n (\alpha-\beta)}, 
+\]
+that the coefficients satisfy
+\[
+ % a_{n}(p) =  \frac{2^{-n} \Gamma(n-\frac{p}{2})}{\Gamma(n+1)\Gamma(-\frac{p}{2})}
+ a_{n}(p) =  2^{-n} {{-\frac{p}{2}-1}\choose{n}}
+  \;\pFq{2}{1}{\tfrac{n}{2}-\tfrac{p}{4},\tfrac{n+1}{2}-\tfrac{p}{4}}{n+1}{1}.
+\]
+\bibliographystyle{abbrv}
+\bibliography{biblio_ehler2}
+\end{document}
