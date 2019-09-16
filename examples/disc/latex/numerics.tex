@@ -34,110 +34,7 @@ abstract=on% return to old style centered abstract
 \usepackage{scalerel}
 
 \DeclareMathOperator{\Lcurve}{L-curv}
-\newcommand{\weakly}{\rightharpoonup}
-\newcommand{\N}{\ensuremath{\mathbb{N}}}
-\newcommand{\T}{\ensuremath{\mathbb{T}}}
-\renewcommand{\S}{\ensuremath{\mathbb{S}}}
-\newcommand{\B}{\ensuremath{\mathbb{B}}}
-\newcommand{\NZ}{\ensuremath{\mathbb{N}_{0}}}
-\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
-\newcommand{\Q}{\ensuremath{\mathbb{Q}}}
-\newcommand{\R}{\ensuremath{\mathbb{R}}}
-\newcommand{\C}{\ensuremath{\mathbb{C}}}
-\newcommand{\nchoosek}[2]{\left(\begin{array}{c}#1\\#2\end{array}\right)}
-\newcommand{\ii}{\textnormal{i}}
-\newcommand{\X}{\mathbb{X}}
-\newcommand{\Y}{\mathbb{Y}}
-\newcommand{\e}{\textnormal{e}}
-\newcommand{\supp}{\textnormal{supp}}
-\newcommand{\eip}[1]{\textnormal{e}^{2\pi\ii{#1}}}
-\newcommand{\eim}[1]{\textnormal{e}^{-2\pi\ii{#1}}}
-\newcommand{\norm}[1]{\left\Vert #1\right\Vert}
-\def\invisible#1{\textcolor{white}{#1}}
-\newcommand{\ceil}[1]{\encl{\lceil}{#1}{\rceil}}
-\newcommand{\floor}[1]{\encl{\lfloor}{#1}{\rfloor}}
-\newcommand{\zb}[1]{\ensuremath{\boldsymbol{#1}}}
-\newcommand{\pmat}[1]{\begin{pmatrix} #1 \end{pmatrix}}
-\newcommand{\set}[1]{\left\{ #1 \right\}}
-\newcommand{\abs}[1]{\left| #1 \right |}
-\newcommand{\dx}{\,\mathrm{d}}
-\newcommand{\tT}{\mathrm{T}}
-\newcommand{\uT}{\scriptscriptstyle{T}}
-\newcommand{\uuT}{{\scaleto{T}{3pt}}}
 \newcommand{\TSP}{\text{TSP}}
-
-\def\3{\ss}
-\def\ep{\varepsilon}
-\def\la{\lambda}
-\def\La{{\mathbf\lambda}}
-\def\Ga{\Gamma}
-\def\fl#1{\lfloor#1\rfloor}
-\def\cl#1{\lceil#1\rceil}
-
-\newmuskip\pFqmuskip
-
-\newcommand*\pFq[6][8]{
-  \begingroup % only local assignments
-  \pFqmuskip=#1mu\relax
-  % make the comma math active
- % \mathcode`\,=\string"8000
-  % and define it to be \pFqcomma
-  \begingroup\lccode`\~=`\,
-  \lowercase{\endgroup\let~}\pFqcomma
-  % typeset the formula
-  {}_{#2}F_{#3}{\left(\genfrac..{0pt}{}{#4}{#5};#6\right)}%
-  \endgroup
-}
-\newcommand*\pRegFq[6][8]{
-  \begingroup % only local assignments
-  \pFqmuskip=#1mu\relax
-  % make the comma math active
- % \mathcode`\,=\string"8000
-  % and define it to be \pFqcomma
-  \begingroup\lccode`\~=`\,
-  \lowercase{\endgroup\let~}\pFqcomma
-  % typeset the formula
-  {}_{#2}\tilde{F}_{#3}{\left(\genfrac..{0pt}{}{#4}{#5};#6\right)}%
-  \endgroup
-}
-
-
-\newcommand{\pFqcomma}{\mskip\pFqmuskip}
-
-
-\newcommand*{\bigtimes}{\mathop{\raisebox{-.5ex}{\hbox{\Large{$\times$}}}}}
-
-\DeclareMathOperator{\Lip}{Lip}
-\DeclareMathOperator*{\AC}{AC^p}
-\DeclareMathOperator*{\Speed}{Speed}
-\DeclareMathOperator*{\Length}{Length}
-\DeclareMathOperator*{\argmax}{arg\,max}
-\DeclareMathOperator*{\diag}{diag}
-\DeclareMathOperator*{\trace}{trace}
-\DeclareMathOperator*{\diam}{diam}
-\DeclareMathOperator*{\spann}{span}
-\DeclareMathOperator{\dist}{dist}
-\DeclareMathOperator{\F}{F}
-\DeclareMathOperator*{\maxdeg}{maxdeg}
-\DeclareMathOperator*{\sep}{sep}
-\DeclareMathOperator*{\lt}{lt}
-\DeclareMathOperator*{\Var}{Var}
-\DeclareMathOperator*{\Beta}{Beta}
-\DeclareMathOperator{\G}{\mathcal{G}}
-\DeclareMathOperator{\geo}{geo}
-\DeclareMathOperator{\ch}{ch}
-\DeclareMathOperator*{\per}{per}
-\DeclareMathOperator*{\id}{id}
-\DeclareMathOperator*{\vol}{vol}
-\DeclareMathOperator{\Pol}{Pol}
-\DeclareMathOperator*{\Real}{Re}
-\DeclareMathOperator*{\Imag}{Im}
-\DeclareMathOperator*{\disc}{disc}
-\DeclareMathOperator{\OOO}{O}
-\DeclareMathOperator*{\SO}{SO}
-\DeclareMathOperator*{\argmin}{argmin}
-\DeclareMathOperator*{\Mapprox}{\mathcal{P}_{\text{res}}(\mathcal M)}
-\DeclareMathOperator{\Space}{\mathcal{M}}
 
 
 \newtheorem{thm}{Theorem}[section]
@@ -206,13 +103,19 @@ For fixed $L>0$ and probability measure $\mu$ on $\mathbb X$ we aim to solve the
 \end{equation}
 Letting $N$ tend to infinity we eventually approach a closed curve $\gamma$, $\gamma(\tfrac kN) \approx x_{k}$ of speed at most $L$ such that the push-forward $\nu = \gamma_{*}(\mathrm dt)$, approaches $\mu$.  
 
-We shall solve the optimization problem approximately by applying the nonlinear conjugate gradient method, cf. {\color{blue} Section ...}, to the following unconstrained formulation
+We shall solve the optimization problem approximately by applying the nonlinear conjugate gradient method to the following unconstrained formulation
 \begin{equation}
   \label{eq:constant_speed_min_relaxed}
   \min_{x_{1},\dots,x_{N}} \mathscr{D}^{2} \Big(\mu, \frac{1}{N} \sum_{k=1}^{N} \delta_{x_{k}}\Big) +   \frac{\alpha}{N} \sum_{k=1}^{N} \big(N \mathrm{dist}(x_{k-1},x_{k}) - L \big)_{+}^{2}
 \end{equation}
 where $\alpha > 0$ is a penalty parameter. Note, for $\alpha \to \infty$ there is a subsequence of minimizers of \eqref{eq:constant_speed_min_relaxed} which will converge to minimizers of \eqref{eq:constant_speed_min}.
 
+\begin{remark}
+  Obviously the objective function in \eqref{eq:constant_speed_min_relaxed} is not once and twice differentiable whenever $x_{k-1}=x_{k}$ and $\mathrm{dist}(x_{k-1},x_{k}) = \frac{L}{N}$, respectively. However, we observe numerically that local minimizers of \eqref{eq:constant_speed_min_relaxed} do not belong to this critical set of measure zero. That means in turn, if a local minimizer has a positive definite Hessian, then there is a local neighborhood where the CG method (with exact line search) permits a superlinearly convergence rate. We do indeed observe this behavior.
+\end{remark}
+For large $L$ we cannot hope to find a solution/global minimizer to problem \eqref{eq:constant_speed_min_relaxed}, since the number of local minimizers appears to increase exponentially {\color{blue}[ ref???]}.
+
+\subsection{Numerical evaluation}
 Recall that for given kernels $K:\mathbb X\times \mathbb X \to \mathbb R$ the squared discrepancy can be evaluated by
 \[
   \mathscr D^{2}\Big(\mu, \frac 1N \sum_{k=1}^{N} \delta_{x_{k}}\Big) = E_{\mu}(x_{1},\dots,x_{N})
@@ -249,7 +152,6 @@ Our approach is to approximate the kernel $K$ by a truncation
 \]
 with $t \sim N$ and evaluate formula \eqref{eq:E_mu_Fourier} by fast summation methods, so that the overall complexity is almost linearly in $t$ and $N$. 
 
-{\color{blue} To support the reasonablenes of this approach we may compare the minimizers of $K$ with $K_{t}$ for the uniform measure $\mu$.}
 \subsection{Choice of Parameters}
 
 In order to find reasonable (local) solutions of \eqref{eq:min_PL} we shall carefully adjust the parameters in problem \eqref{eq:constant_speed_min_relaxed}, namely the penalty parameter $\alpha$, the number of points $N$ and the polynomial degree $t$.
@@ -269,9 +171,10 @@ is the length of the resulting curve $\gamma$ going through the points, i.e.,
  \gamma(t_{k}) := x_{k}, \qquad t_{k} = \sum_{i=1}^{k}  \mathrm{dist}(x_{i-1},x_{i})/ \mathcal L(\gamma).
 \]
 
-In Figure~\ref{fig:Nexperiment} {(\color{blue} Example environment..?)} we show some results for the two-dimensional torus. 
+%In Figure~\ref{fig:Nexperiment} we show some results for the two-dimensional torus. 
 
-\textbf{Polynomial degree.} We believe it is reasonable to take $t \sim N^{\frac1d} \sim L^{\frac{1}{d-1}}$. Note, in that case the computational cost is almost linearly in $N$, for $\mathbb X = \mathbb T^{d}, \mathbb S^{2}, \mathrm{SO(3)}, \mathcal G_{2,4}$. In Figure~\ref{fig:t_experiment} {(\color{blue}Example environment..?)} we show some results for the two-dimensional torus. 
+\textbf{Polynomial degree.} We believe it is reasonable to take $t \sim N^{\frac1d} \sim L^{\frac{1}{d-1}}$. Note, in that case the computational cost is almost linearly in $N$, for $\mathbb X = \mathbb T^{d}, \mathbb S^{2}, \mathrm{SO(3)}, \mathcal G_{2,4}$.
+% In Figure~\ref{fig:t_experiment} we show some results for the two-dimensional torus. 
 
 \textbf{Penalty Parameter.}
 Intuitively, the minimizers of \eqref{eq:constant_speed_min_relaxed} will treat both terms almost equally, i.e., for $N\to \infty$ both terms are of the same order. Hence, our heuristic is to chose the parameter $\alpha$, such that the objective function and the penalty term are of the same order for minimizers of \eqref{eq:constant_speed_min_relaxed} i.e.,
@@ -288,96 +191,13 @@ So that a reasonable choice is
 \[
   \alpha \sim L^{-\frac{2s}{d-1}-2} \sim N^{\frac{-2s-2d+2}{d}}.
 \]
-
-In Figure~\ref{fig:L_alpha_experiment} {(\color{blue}Example environment..?)} we show some results for the two-dimensional torus. 
-
+%In Figure~\ref{fig:L_alpha_experiment}  we show some results for the two-dimensional torus. 
 
 
-\subsection{Basic Observations}
-For large $L$ we cannot hope to find a solution/global minimizer to problem \eqref{eq:constant_speed_min_relaxed}, since the number of local minimizers appears to increase exponentially {\color{blue}[ ref???]}.
+\subsection{Finding good curves of increasing length}
 
-The intention of this section is to provide a case study of the influence/interplay of certain parameters to (local) solutions of
-problem \eqref{eq:constant_speed_min_relaxed}, namely
-\begin{itemize}
-\item the parameters $L$, $N$, $\alpha$
-\item initial point/curve
-\item choice of kernel (truncation parameter $t$)
-\item choice of measure $\mu$ (atomic, singular, regular, disconnected support,...) 
-\end{itemize}
-
-In what follows we apply the conjugate gradient method to problem \eqref{eq:constant_speed_min_relaxed} for the torus $\mathbb T^{2}$.
-
-\textbf{Influence of the number of points.} We like to show the dependence on the parameter $N$. In this experiment we increase for fixed $L$ and $\alpha$ the number $N$ of points by subdividing the line segments.  We let $\mu$ be the Lebesgue measure, $L=4$, $\alpha=0.1\cdot 2^{-\frac52 i}$, $i=1,\dots,5$, and consider the kernel $K_{t}$, $t=32$. We start with a local minimizer for $N=10$. Then, we successively increase $N$ by inserting the mid points of the line segments connecting $x_{i}$ and $x_{i+1}$ and perform a local minimization. The results are depicted in Figure~\ref{fig:Nexperiment}.
-
-Note, the choice $\alpha =0.1 (N/5)^{-\frac 52}$ on the diagonal in  Figure~\ref{fig:Nexperiment} {\color{blue}(see section: choice of alpha)}. This shows that the number of points leads to reasonable approximations, where the main features of the curves are preserved.
-
-\begin{figure}
-  \begin{tabular}{ccccc}
-$N=10$  &  $N=20$   & $N=40$  & $N=80$  & $N=160$ \\
-%  \includegraphics[width=0.18\textwidth]{Images/N10_L4_a1000} & 
-%  \includegraphics[width=0.18\textwidth]{Images/N20_L4_a1000} & 
-%  \includegraphics[width=0.18\textwidth]{Images/N40_L4_a1000} &
-%  \includegraphics[width=0.18\textwidth]{Images/N80_L4_a1000} &
-%  \includegraphics[width=0.18\textwidth]{Images/N160_L4_a1000}\\
-$\mathcal L(\gamma)\approx 4.0000$ &
-$\mathcal L(\gamma)\approx 4.0000$ &
-$\mathcal L(\gamma)\approx 4.0000$ &
-$\mathcal L(\gamma)\approx 4.0000$ &
-$\mathcal L(\gamma)\approx 4.0000$\\ 
-  \end{tabular}
-  \caption{Local minimizers  of \eqref{eq:constant_speed_min_relaxed} for $\mu$ the Lebesgue measure, $L=4$ with kernel $K_{t}$, $t=64$ and increasing $N$ (column-wise) and decreasing $\alpha$ (row-wise). The first row shows the local minimizers for  $\alpha=1000$ and corresponds to curves of constant speed and length $L=4$. In the following rows local minimizers are depicted for $\alpha = 0.1\cdot 2^{-\frac52 i}$,$i=1,\dots,5$. Note, the increase in the length of the curves for decreasing $\alpha$ or increasing $N$, until stagnation for sufficient small $\alpha$ or big $N$. For all minimizer the distance between consecutive points is around $L(\gamma)/N$.}
-  \label{fig:Nexperiment}
-\end{figure}
-
-\textbf{Influence of the penalty parameter.} In this experiment we like to give an intuition of the parameter $\alpha$. There we choose $\alpha := c L^{-5}$ and observe that indeed the (local) minimizers have length almost proportional to $L$. In the experiment we chose $N$ sufficiently large, see Figure~\ref{fig:Nexperiment}. We note that the distance of consecutive points do vary more for smaller constants $c$, i.e., for higher ratios $L(\gamma)/L$. In other words the measure $\omega$ along the constant speed curve differ more from the Lebesgue measure. This corresponds to the fact that $\alpha$ needs to tend to infinity in order to solve problem \eqref{eq:constant_speed_min}.
-\begin{figure}
-  \begin{tabular}{cccc}
-    % $L=1$  &
-               $L=2$ &  $L=4$  & $L=8$ & $L=16$\\
-%  \includegraphics[width=0.23\textwidth]{Images/Ramp_L1_i1} & 
-%  \includegraphics[width=0.23\textwidth]{Images/Ramp_L2_i1} & 
-%  \includegraphics[width=0.23\textwidth]{Images/Ramp_L4_i1} & 
-%  \includegraphics[width=0.23\textwidth]{Images/Ramp_L8_i1} &
-%  \includegraphics[width=0.23\textwidth]{Images/Ramp_L16_i1} \\
-%$\mathcal L(\gamma)\approx 3.92$ &
-$\mathcal L(\gamma)\approx 8.01$ &
-$\mathcal L(\gamma)\approx 16.23$ &
-$\mathcal L(\gamma)\approx 32.62$ &
-$\mathcal L(\gamma)\approx 65.90$ \\
-  \end{tabular}
-   \caption{Local minimizers  of \eqref{eq:constant_speed_min_relaxed} for $\mu$ the measure given by the density $\frac{2\pi-y}{4\pi^{3}} \mathrm dx \mathrm dy$, with kernel $K_{t}$, $t=128$ and several choices of $L$ and $\alpha$. $L$ is increasing column-wise and row-wise we set $\alpha = c L^{-5}$. The constants $c=0.003,0.14,100$ are chosen such that the length of the minimizers satisfy $L(\gamma) / L \approx 4,2,1$, respectively. The density of the measure $\omega$ corresponds to the thickness of the curves.}
-  \label{fig:L_alpha_experiment}
-\end{figure}
-
-\textbf{Influence of the degree.} Now, we like to show the effect of the truncation parameter $t$, i.e., the degree of $K_{t}$. From the previous observations and discussions we infer that the choice $N \sim L^{2}$ and $\alpha \sim L^{-5}$ are quite reasonable. In this experiment we shall provide some evidence that the choice $t \sim L$ might also be reasonable.
-In Figure~\ref{fig:t_experiment} we depict the local minimizers of \eqref{eq:constant_speed_min_relaxed} for fixed parameters $L=2,4,8,16$, whith $\alpha = 0.2 \cdot L^{-5}$, $N=20 L^{2}$. We can observe that for $t = c L$ the corresponding local minimizers have common features. For instance, if $c=2$ ($t \approx L(\gamma)$) the minimizers have mostly vertical and horizantal line segments, similar to a path along a grid. Furthermore for sufficientt large $c$, say $c\ge 4$, the minimizers appear to provide {\color{blue} mercedes-star junctions (oder wie würdet ihr dazu sagen ;)}. 
-
-\begin{figure}
-  \begin{tabular}{ccccc}
-$t=8$  &  $t=16$   & $t=32$  & $t=64$  & $t=128$ \\
-%  \includegraphics[width=0.18\textwidth]{Images/T8_L2} & 
-%  \includegraphics[width=0.18\textwidth]{Images/T16_L2} & 
-%  \includegraphics[width=0.18\textwidth]{Images/T32_L2} & 
-%  \includegraphics[width=0.18\textwidth]{Images/T64_L2} & 
-%  \includegraphics[width=0.18\textwidth]{Images/T128_L2} \\
-%$\mathcal L(\gamma)\approx 4.07$ &
-%$\mathcal L(\gamma)\approx 4.07$ &
-%$\mathcal L(\gamma)\approx 4.06$ &
-%$\mathcal L(\gamma)\approx 4.06$ &
-%$\mathcal L(\gamma)\approx 4.05$\\ 
-  \end{tabular}
-  \caption{Local minimizers  of \eqref{eq:constant_speed_min_relaxed} for $\mu$ the Lebesgue measure, which show the effect of the degree $t$ of the kernel $K_{t}$. Column-wise we increase $t=8,16,32,64,128$ and row-wise we increase $L=2,4,8,16$ where $\alpha = 0.2 L^{-5}$ and $N=20 L^{2}$. Note, the degree $t$ somehow steers the resolution of the curves. It appears that the spacing of the curves is bounded by $t^{-1}$.  Moreover the choice $t = c L$ leads to similar patterns. For instance, if $c=2$ the patterns are given mostly by horizontal or vertical line segments.}
-  \label{fig:t_experiment}
-\end{figure}
-
-
-
-
-\subsection{Finding good initial points/curves}
-
-Since the objective function in \eqref{eq:constant_speed_min} is highly non-convex, the main problem is to find good initial points $x_{k} \in \mathbb X$.
-
-Our heuristic is as follows. We start with a curve $\gamma:[0,1]\to \mathbb X$ of small length $L(\gamma)$ and solve the problem \eqref{eq:constant_speed_min_relaxed} for certain $\alpha$ in dependency of the parameter $L$.
+Since the objective function in \eqref{eq:constant_speed_min_relaxed} is highly non-convex, the main problem is to find good initial curves $\gamma_{L} \in  \mathcal P_{L}^{\Lcurve}(\mathbb X)$ for $L$ large. Our heuristic is as follows. We start with a curve $\gamma_{L_{0}}:[0,1]\to \mathbb X$ of small length $\mathcal L(\gamma) \approx L_{0}$ and solve the problem \eqref{eq:constant_speed_min_relaxed} for increasing $L_{i} = c L_{i-1}$, $c>1$, where we take the parameters $N_{i}$, $\alpha_{i}$ and $t_{i}$ in dependency of $L_{i}$ as described above.
+% $N \sim L^{\frac{d}{d-1}}$, $\alpha \sim L^{-\frac{2(s-d-1)}{d-1}}$, $t \sim L^{d-1}$.
 
 \textbf{2d-torus.}
 We choose the following dependencies $\alpha = L^{-4}$, $N =11 L^{2}$, $t=3 L$. We start with a circle of radius $r=\frac13$ and solve \eqref{eq:constant_speed_min_relaxed} for $L=3$ using the conjugate gradient method. The obtained minimizer is used as initial point for the next minimization problem, where the parameter $L$ is doubled. The procedure is stopped when the twice the length of the minimizer bigger than the prescribed length.
