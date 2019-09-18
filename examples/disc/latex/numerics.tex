@@ -146,12 +146,6 @@ can be written in closed form. In that case the complexity scales quadratically 
 
 \item The formula \eqref{eq:E_mu_Fourier} allows for exact evaluation only if the kernel has a finite expansion. In that case the complexity scales linearly in the number $N$ of points. 
 \end{itemize}
-Our approach is to approximate the kernel $K$ by a truncation
-\[
-  K_{t}(x,y) := \sum_{l=0}^{t} \lambda_{l} \varphi_{l}(x) \overline{\varphi_{l}(y)}
-\]
-with $t \sim N$ and evaluate formula \eqref{eq:E_mu_Fourier} by fast summation methods, so that the overall complexity is almost linearly in $t$ and $N$. 
-
 \subsection{Choice of Parameters}
 
 In order to find reasonable (local) solutions of \eqref{eq:min_PL} we shall carefully adjust the parameters in problem \eqref{eq:constant_speed_min_relaxed}, namely the penalty parameter $\alpha$, the number of points $N$ and the polynomial degree $t$.
@@ -160,7 +154,7 @@ In order to find reasonable (local) solutions of \eqref{eq:min_PL} we shall care
 From the asymptotic of the path lengths of the traveling sales man problem (TSP) {\color{blue}(see aslo asymptotic for atomic/empirical measures)}
 we know that we should choose
 \[
-  N \gtrsim \mathcal L(\gamma)^{\frac{d}{d-1}},
+  N \gtrsim \mathcal L(\gamma)^{\frac{d_{\mu}}{d_{\mu}-1}}, \qquad  {\color{red} d_{\mu} := \mathrm{dim}(\mathrm{supp}(\mu))} \ge 2
 \]
 where
 \[
@@ -173,34 +167,63 @@ is the length of the resulting curve $\gamma$ going through the points, i.e.,
 
 %In Figure~\ref{fig:Nexperiment} we show some results for the two-dimensional torus. 
 
-\textbf{Polynomial degree.} We believe it is reasonable to take $t \sim N^{\frac1d} \sim L^{\frac{1}{d-1}}$. Note, in that case the computational cost is almost linearly in $N$, for $\mathbb X = \mathbb T^{d}, \mathbb S^{2}, \mathrm{SO(3)}, \mathcal G_{2,4}$.
+\textbf{Polynomial degree.} We believe that it is reasonable to take $r \sim N^{\frac{1}{d_{\mu}}} \sim L^{\frac{1}{d_{\mu}-1}}$.
 % In Figure~\ref{fig:t_experiment} we show some results for the two-dimensional torus. 
 
 \textbf{Penalty Parameter.}
 Intuitively, the minimizers of \eqref{eq:constant_speed_min_relaxed} will treat both terms almost equally, i.e., for $N\to \infty$ both terms are of the same order. Hence, our heuristic is to chose the parameter $\alpha$, such that the objective function and the penalty term are of the same order for minimizers of \eqref{eq:constant_speed_min_relaxed} i.e.,
 \begin{equation}
   \label{eq:penalty_behavior}
-  \frac{\alpha}{N} \sum_{k=1}^{N} \big(N \mathrm{dist}(x_{k-1},x_{k}) - L \big)_{+}^{2} \sim N^{-\frac{2s}{d}} \sim
+  \frac{\alpha}{N} \sum_{k=1}^{N} \big(N \mathrm{dist}(x_{k-1},x_{k}) - L \big)_{+}^{2}  \sim {\color{blue}  N^{-\frac{2s-(d-d_{\mu)}}{d_{\mu}}}} \sim
   \min_{x_{1},\dots,x_{N}} \mathscr{D}^{2} \Big(\mu, \frac{1}{N} \sum_{k=1}^{N} \delta_{x_{k}}\Big) 
 \end{equation}
-Assuming that for the length $\mathcal L(\gamma) = \sum_{k=1}^{N}\mathrm{dist}(x_{k-1},x_{k})$ of a minimizer $\gamma$ we have $\mathcal L(\gamma) \sim L \sim N^{\frac{d-1}{d}}$, so that $N \mathrm{dist}(x_{k-1},x_{k}) \approx L$, then the value of the penalty term behaves like
+Assuming that for the length $\mathcal L(\gamma) = \sum_{k=1}^{N}\mathrm{dist}(x_{k-1},x_{k})$ of a minimizer $\gamma$ we have $\mathcal L(\gamma) \sim L \sim N^{\frac{d_{\mu}-1}{d_{\mu}}}$, so that $N \mathrm{dist}(x_{k-1},x_{k}) \approx L$, then the value of the penalty term behaves like
 \[
-  \frac{\alpha}{N} \sum_{k=1}^{N} \big(N \mathrm{dist}(x_{k-1},x_{k}) - L \big)_{+}^{2} \sim  \alpha L^{2} \sim \alpha N^{\frac{2d-2}{d}}
+  \frac{\alpha}{N} \sum_{k=1}^{N} \big(N \mathrm{dist}(x_{k-1},x_{k}) - L \big)_{+}^{2} \sim  \alpha L^{2} \sim \alpha N^{\frac{2d_{\mu}-2}{d_{\mu}}}
 \]
 So that a reasonable choice is
 \[
-  \alpha \sim L^{-\frac{2s}{d-1}-2} \sim N^{\frac{-2s-2d+2}{d}}.
+  \alpha \sim L^{\frac{-2s-3d_{\mu}+d+2}{d_{\mu}-1}} \sim N^{\frac{-2s-3d_{\mu}+d+2}{d_{\mu}}}.
 \]
 %In Figure~\ref{fig:L_alpha_experiment}  we show some results for the two-dimensional torus. 
 
 
-\subsection{Finding good curves of increasing length}
+\begin{remark}
+  In the case $r\sim N^{\frac{1}{d_{\mu}}} \sim L^{\frac{1}{d_{\mu}-1}}$ the overall computational cost of the discrepancy evaluation is almost $N^{\frac{d}{d_{\mu}}} \sim L^{\frac{d}{d_{\mu}-1}}$ for $\mathbb X = \mathbb T^{d}, \mathbb S^{2}, \mathrm{SO(3)}, \mathcal G_{2,4}$. That means, whenever $d_{\mu}=d$ the computational cost is almost linearly in $N \sim L^{\frac{d}{d-1}}$ in these specific examples. In contrast to $d_{\mu} = 2$, where the computational cost is almost $N^{\frac d2} \sim L^{d}$, we have a course of dimensions, which resides in the well-known fact that Fourier methods works best on the whole space $\mathbb X$.
+\end{remark}
 
-Since the objective function in \eqref{eq:constant_speed_min_relaxed} is highly non-convex, the main problem is to find good initial curves $\gamma_{L} \in  \mathcal P_{L}^{\Lcurve}(\mathbb X)$ for $L$ large. Our heuristic is as follows. We start with a curve $\gamma_{L_{0}}:[0,1]\to \mathbb X$ of small length $\mathcal L(\gamma) \approx L_{0}$ and solve the problem \eqref{eq:constant_speed_min_relaxed} for increasing $L_{i} = c L_{i-1}$, $c>1$, where we take the parameters $N_{i}$, $\alpha_{i}$ and $t_{i}$ in dependency of $L_{i}$ as described above.
+
+
+\subsection{Finding good curves of increasing $L$}
+
+Since the objective function in \eqref{eq:constant_speed_min_relaxed} is highly non-convex, the main problem is to find good initial curves $\gamma_{L} \in  \mathcal P_{L}^{\Lcurve}(\mathbb X)$ for large $L$. Our heuristic is as follows. We start with a curve $\gamma_{L_{0}}:[0,1]\to \mathbb X$ of small length $\mathcal L(\gamma) \approx L_{0}$ and solve the problem \eqref{eq:constant_speed_min_relaxed} for increasing $L_{i} = c L_{i-1}$, $c>1$, where we take the parameters $N_{i}$, $\alpha_{i}$ and $t_{i}$ in dependency of $L_{i}$ as described above. Finally, we increase $\alpha$ to get a curve satisfying $L(\gamma) \le L$. 
 % $N \sim L^{\frac{d}{d-1}}$, $\alpha \sim L^{-\frac{2(s-d-1)}{d-1}}$, $t \sim L^{d-1}$.
 
 \textbf{2d-torus.}
-We choose the following dependencies $\alpha = L^{-4}$, $N =11 L^{2}$, $t=3 L$. We start with a circle of radius $r=\frac13$ and solve \eqref{eq:constant_speed_min_relaxed} for $L=3$ using the conjugate gradient method. The obtained minimizer is used as initial point for the next minimization problem, where the parameter $L$ is doubled. The procedure is stopped when the twice the length of the minimizer bigger than the prescribed length.
+In this example we show how well a gray-valued image may be approximated by an almost constant speed curve. The image is depicted in Figure... It has pixel size 170x170. The Fourier coefficients $\hat \mu_{k_{1},k_{2}}$ of the image are computed by a discrete Fourier transform (DFT) using the FFT algorithm and normalized appropriately. The kernel $K$ is given in Example~{\color{blue} TODO}, so that $H_{K} = H^{\frac32}(\mathbb T^{2})$.
+
+We start with $N_{0}=96$ points on a circle given by the formula
+\[
+  x_{0,k} = ( \tfrac15 \cos(2\pi k/N), \tfrac15 \sin(2\pi k/N)), \qquad k=0,\dots,N_{0}.
+\]
+Then we solve for any index $i=0,\dots,11$ the problem \eqref{eq:constant_speed_min_relaxed} with parameters
+\[
+  L_{i} = 0.97\cdot 2^{\frac{i+5}{2}},\qquad \alpha_{i} = 100\,L_{i}^{-5},\qquad N_{i} = 2^{i} N_{0} \sim L_{i}^{2}, \qquad r_{i}= \lfloor 2^{\frac{i+11}{2}} \rfloor \sim L_{i}.
+\]
+The parameters are chosen such that
+for a local minimizer $\gamma_{i}$ the length satisfies $\mathcal L(\gamma_{i}) \approx 2^{\frac{i+5}{2}}$ and the maximal speed is not too far from $L_{i}$. In each step a local minimizer is computed using the CG method with 100 interations. The obtained minimizer $\gamma_{i}$ will serve as the initial guess in the next step, which is obtained by inserting the midpoints, i.e. $x_{i+1,2k}=x_{i,k}$ and $x_{i+1,2k+1} = \frac{1}{2}(x_{i,k}+ x_{i,k+1})$, $k=0,\dots,N_{i}$. 
+
+In order to get a curve of almost constant speed we increase $\alpha_{i}$ by a factor of 100 and set $L_{i} = 2^{\frac{i+5}{2}}$. Then we apply $(i+1)$ times the CG method with maximal 100 iterations to the previously found curve $\gamma_{i}$. The results are depicted in Figure... 
+
+\textbf{3d-torus.} In this example we like to show two things. First, the algorithm works pretty well in three dimensions. Second we are able to approximate any compact surface in three-dimensional space by a curve {\color{blue} (Even more, the numerical experiments indicate that the approximation rates may indeed hold for any smooth Riemannian manifold)}.  
+
+In this example we build a measure $\mu$ supported almost on a two-dimensional surface. More precisely, we take samples from Spock's head (see the Mingle homepage http://www.cs.technion.ac.il/$\sim$vitus/mingle/ for the data) and placing small Gaussian peaks at the sampling points, i.e., the density is given by
+\[
+  \rho(x) := c^{-1} \sum_{p \in X} \mathrm{e}^{-30000 \|p-x\|_2^2}, \quad x \in [-\tfrac12,\tfrac12], \qquad c := \int_{[-\tfrac12,\tfrac12]^3} \sum_{p \in X} \mathrm{e}^{-30000 \|p-x\|_2^2} \mathrm dx,
+\]
+where $X\subset \mathbb R^{3}$ is the sampling set. Here the Fourier coefficients are again computed by a DFT and the kernel $K$ is given in Example~{\color{blue} TODO}, so that $H_{K} = H^{2}(\mathbb T^{3})$.
+
+
 
 %\bibliographystyle{abbrv}
 %\bibliography{biblio_ehler2}
