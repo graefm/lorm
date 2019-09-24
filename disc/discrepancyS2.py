@@ -13,7 +13,7 @@ class plan(ManifoldObjectiveFunction):
         '''
         self._M = M
         self._N = N
-        self._nfsft_plan = nfsft.plan(M, N+2)
+        self._nfsft_plan = nfsft.plan(M, N)
         self._lambda_hat = nfsft.SphericalFourierCoefficients(N)
         self._lambda_hat.array[:] = 1
         self._mu_hat = nfsft.SphericalFourierCoefficients(N)

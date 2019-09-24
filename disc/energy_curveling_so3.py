@@ -5,7 +5,7 @@ from nfft import nfsoft
 import numpy as np
 
 class plan(ManifoldObjectiveFunction):
-    def __init__(self, M, N, alpha, power):
+    def __init__(self, M, N, alpha, L, equality_constraint=False):
         '''
         plan for computing the (polynomial) L^2 discrepancy on the rotation group SO(3)
         M - number of points
@@ -15,30 +15,34 @@ class plan(ManifoldObjectiveFunction):
         self._N = N
         self._m = 5
         self._alpha = alpha
-        self._p = power
+        self._L = L
+        self._equality_constraint = equality_constraint
         self._nfsoft_plan = nfsoft.plan(M, N+2, self._m)
         self._lambda_hat = nfsoft.SO3FourierCoefficients(N)
         for n in range(N+1):
-            self._lambda_hat[n,:,:] = (2.*n+1)/(8*np.pi**2)
+            self._lambda_hat[n,:,:] = (2.*n+1)/((2.*n-1)*(2.*n+1)**2*(2.*n+3))
         self._mu_hat = nfsoft.SO3FourierCoefficients(N)
         self._mu_hat[0,0,0] = 8*np.pi**2 # int_SO(3) D^n_k,k'(x) mu(x)
         self._weights = 8*np.pi**2 * np.ones([M,1],dtype=float) / M
 
         def f(point_array_coords):
             lengths = self._eval_lengths(point_array_coords)
-            err_vector = self._eval_error_vector(point_array_coords)
-            return  np.sum(np.real(np.dot(err_vector.array.conjugate(),self._lambda_hat.array*err_vector.array))) + self._alpha*np.power((self._M)**(self._p-1)*np.sum(lengths**(self._p)),1/self._p)
+            err_vec = self._eval_error_vector(point_array_coords)
+            pos_diff_lengths = self._M*lengths-self._L
+            if self._equality_constraint == False:
+                pos_diff_lengths[ pos_diff_lengths < 0] = 0
+            return  np.sum(np.real(np.dot(err_vec.array.conjugate(),self._lambda_hat.array*err_vec.array))) + self._alpha*1./self._M*np.sum(pos_diff_lengths**2)
 
         def grad(point_array_coords):
             le  = self._eval_error_vector(point_array_coords)
             le *= self._lambda_hat
             # we already set the point_array_coords in _eval_error_vector
-            grad = 2*np.real(self._nfsoft_plan.compute_gradYmatrix_multiplication(le)) * self._weights + self._alpha*self._eval_grad_sum_lengths_powers(point_array_coords)
+            grad = 2*np.real(self._nfsoft_plan.compute_gradYmatrix_multiplication(le)) * self._weights + self._alpha*1./self._M*self._eval_grad_sum_lengths_squared(point_array_coords)
             return grad
 
         def hess_mult(base_point_array_coords, tangent_array_coords):
             norm = np.linalg.norm(tangent_array_coords)
-            h = 1e-7
+            h = 1e-12
             return norm*(self._grad(base_point_array_coords + h*tangent_array_coords/norm) - self._grad(base_point_array_coords))/h
 
         ManifoldObjectiveFunction.__init__(self,SO3(),f,grad=grad,hess_mult=hess_mult, parameterized=True)
@@ -104,13 +108,16 @@ class plan(ManifoldObjectiveFunction):
         grad_lengths[:,2] = (np.cos(dp[:,0]/2)*np.sin(dp[:,2]/2)*np.cos(dp[:,1]/2)+np.sin(dp[:,0]/2)*np.cos(dp[:,2]/2)*np.cos(st/2))
         return grad_lengths*temp
 
-    def _eval_grad_sum_lengths_powers(self,point_array_coords):
+    def _eval_grad_sum_lengths_squared(self,point_array_coords):
         lengths = self._eval_lengths(point_array_coords).reshape([self._M,1])
-        sum_lengths_power = 1/self._p*np.power((self._M)**(self._p-1)*np.sum(lengths**(self._p)),1/self._p-1)
         grad_lengths1 = self._eval_grad_lengths1(point_array_coords)
         grad_lengths2 = self._eval_grad_lengths2(point_array_coords)
 
-        grad = self._p*lengths**(self._p-1)*grad_lengths1
-        grad[0:self._M-1,:] += self._p*lengths[1:self._M]**(self._p-1)*grad_lengths2[1:self._M,:]
-        grad[self._M-1,:] += self._p*lengths[0]**(self._p-1)*grad_lengths2[0,:]
-        return sum_lengths_power*(self._M)**(self._p-1)*grad
+        grad = np.zeros((self._M,3))
+        pos_diff_lengths = self._M*lengths-self._L
+        if self._equality_constraint == False:
+            pos_diff_lengths[ pos_diff_lengths < 0] = 0
+        grad += pos_diff_lengths*grad_lengths1
+        grad[0:self._M-1,:] += pos_diff_lengths[1:self._M]*grad_lengths2[1:self._M,:]
+        grad[self._M-1,:] += pos_diff_lengths[0]*grad_lengths2[0,:]
+        return 2*self._M*grad

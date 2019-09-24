@@ -6,40 +6,46 @@ import numpy as np
 import copy as cp
 
 class plan(ManifoldObjectiveFunction):
-    def __init__(self, M, N, alpha, p, T):
+    def __init__(self, M, N, alpha, L, equality_constraint=False):
         '''
-        plan for computing the (polynomial) L^2 discrepancy of curves on the sphere S^2
+        plan for computing the (polynomial) L^2 discrepancy for points measures on the sphere S^2
+            E(mu,nu_M) = D(mu,nu_M)^2 + alpha/M sum_{i=1}^M (dist(x_i,x_{i-1}) - L)_+^2,  (if equality_constraint == False)
+            E(mu,nu_M) = D(mu,nu_M)^2 + alpha/M sum_{i=1}^M (dist(x_i,x_{i-1}) - L)^2,  (if equality_constraint == True)
         M - number of points
         N - polynomial degree
         '''
         self._M = M
         self._N = N
-        self._nfsft_plan = nfsft.plan(M, N+2)
+        self._nfsft_plan = nfsft.plan(M, N)
         self._lambda_hat = nfsft.SphericalFourierCoefficients(N)
-        self._lambda_hat.array[:] = 1
+        for n in range(N+1):
+            self._lambda_hat[n,:] = 1./((2*n-1)*(2*n+1)*(2*n+3))
         self._mu_hat = nfsft.SphericalFourierCoefficients(N)
         self._mu_hat[0,0] = 1
         self._weights = np.sqrt(4*np.pi) * np.ones([M,1],dtype=float) / M
         self._alpha = alpha
-        self._p = p
-        self._T = T
-
+        self._L = L
+        self._equality_constraint = equality_constraint
 
         def f(point_array_coords):
             lengths = self._eval_lengths(point_array_coords)
+            pos_diff_lengths = self._M*lengths-self._L
+            if self._equality_constraint == False:
+                pos_diff_lengths[ pos_diff_lengths < 0] = 0
             err_vector = self._eval_error_vector(point_array_coords)
-            return np.sum(np.real(np.dot(err_vector.array.conjugate(),self._lambda_hat.array*err_vector.array))) + self._alpha*np.power(1/self._M*np.sum((self._M*lengths-self._T)**(self._p)),1/self._p)
+            return np.real(np.sum(err_vector.array*err_vector.array.conjugate()*self._lambda_hat.array)) + self._alpha * 1./self._M*np.sum((pos_diff_lengths)**2)
+            #return np.sum(np.real(np.dot(err_vector.array.conjugate(),self._lambda_hat.array*err_vector.array))) + self._alpha*np.power(1/self._M*np.sum((self._M*lengths-self._T)**(self._p)),1/self._p)
 
         def grad(point_array_coords):
             le  = self._eval_error_vector(point_array_coords)
             le *= self._lambda_hat
             # we already set the point_array_coords in _eval_error_vector
-            grad = 2*np.real(self._nfsft_plan.compute_gradYmatrix_multiplication(le)) * self._weights + self._alpha*self._eval_grad_sum_lengths_powers(point_array_coords)
+            grad = 2*np.real(self._nfsft_plan.compute_gradYmatrix_multiplication(le)) * self._weights + self._alpha*1./self._M*self._eval_grad_sum_lengths_squared(point_array_coords)
             return grad
 
         def hess_mult(base_point_array_coords, tangent_array_coords):
             norm = np.linalg.norm(tangent_array_coords)
-            h = 1e-7
+            h = 1e-12
             return norm*(self._grad(base_point_array_coords + h*tangent_array_coords/norm) - self._grad(base_point_array_coords))/h
 
 
@@ -115,18 +121,21 @@ class plan(ManifoldObjectiveFunction):
         grad_lengths[0:self._M-1,1] =  -np.sin(dp[1:self._M])*st[1:self._M]*st[0:self._M-1]/lengths[1:self._M]
         return grad_lengths
 
-    def _eval_grad_sum_lengths_powers(self,point_array_coords):
+    def _eval_grad_sum_lengths_squared(self,point_array_coords):
         lengths = self._eval_lengths(point_array_coords).reshape([self._M,1])
-        sum_lengths_power = 1/self._p*np.power(1./self._M*np.sum((self._M*lengths-self._T)**(self._p)),1/self._p-1)
         grad_lengths1 = self._eval_grad_lengths1(point_array_coords)
         grad_lengths2 = self._eval_grad_lengths2(point_array_coords)
+
         grad = np.zeros((self._M,2))
-        grad[0,:] +=  self._p*(self._M*lengths[0]-self._T)**(self._p-1)*grad_lengths1[0,:]
+        pos_diff_lengths = self._M*lengths-self._L
+        if self._equality_constraint == False:
+            pos_diff_lengths[ pos_diff_lengths < 0] = 0
+        grad[0,:] +=  pos_diff_lengths[0]*grad_lengths1[0,:]
         #for i in range(1,self._M):
         #    grad[i,:] += self._p*lengths[i]**(self._p-1)*grad_lengths1[i,:]
-        grad[1:self._M,:] += self._p*(self._M*lengths[1:self._M]-self._T)**(self._p-1)*grad_lengths1[1:self._M,:]
-        grad[self._M-1,:] += self._p*(self._M*lengths[0]-self._T)**(self._p-1)*grad_lengths2[self._M-1,:]
+        grad[1:self._M,:] += pos_diff_lengths[1:self._M]*grad_lengths1[1:self._M,:]
+        grad[self._M-1,:] += pos_diff_lengths[0]*grad_lengths2[self._M-1,:]
         #for i in range(0,self._M-1):
         #    grad[i,:] += self._p*lengths[i+1]**(self._p-1)*grad_lengths2[i,:]
-        grad[0:self._M-1,:] += self._p*(self._M*lengths[1:self._M]-self._T)**(self._p-1)*grad_lengths2[0:self._M-1,:]
-        return sum_lengths_power*grad
+        grad[0:self._M-1,:] += pos_diff_lengths[1:self._M]*grad_lengths2[0:self._M-1,:]
+        return 2*self._M*grad

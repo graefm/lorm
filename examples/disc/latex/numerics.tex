@@ -196,24 +196,63 @@ So that a reasonable choice is
 
 \subsection{Finding good curves of increasing $L$}
 
-Since the objective function in \eqref{eq:constant_speed_min_relaxed} is highly non-convex, the main problem is to find good initial curves $\gamma_{L} \in  \mathcal P_{L}^{\Lcurve}(\mathbb X)$ for large $L$. Our heuristic is as follows. We start with a curve $\gamma_{L_{0}}:[0,1]\to \mathbb X$ of small length $\mathcal L(\gamma) \approx L_{0}$ and solve the problem \eqref{eq:constant_speed_min_relaxed} for increasing $L_{i} = c L_{i-1}$, $c>1$, where we take the parameters $N_{i}$, $\alpha_{i}$ and $t_{i}$ in dependency of $L_{i}$ as described above. Finally, we increase $\alpha$ to get a curve satisfying $L(\gamma) \le L$. 
+Since the objective function in \eqref{eq:constant_speed_min_relaxed} is highly non-convex, the main problem is to find good initial curves $\gamma_{L} \in  \mathcal P_{L}^{\Lcurve}(\mathbb X)$ for large $L$. Our heuristic is as follows. We start with a curve $\gamma_{L_{0}}:[0,1]\to \mathbb X$ of small length $\mathcal L(\gamma) \approx L_{0}$ and solve the problem \eqref{eq:constant_speed_min_relaxed} for increasing $L_{i} = c L_{i-1}$, $c>1$, where we take the parameters $N_{i}$, $\alpha_{i}$ and $r_{i}$ in dependency of $L_{i}$ as described in the previous section. Finally, we increase $\alpha$ to get a curve satisfying $L(\gamma) \le L$. 
 % $N \sim L^{\frac{d}{d-1}}$, $\alpha \sim L^{-\frac{2(s-d-1)}{d-1}}$, $t \sim L^{d-1}$.
 
 \textbf{2d-torus.}
-In this example we show how well a gray-valued image may be approximated by an almost constant speed curve. The image is depicted in Figure... It has pixel size 170x170. The Fourier coefficients $\hat \mu_{k_{1},k_{2}}$ of the image are computed by a discrete Fourier transform (DFT) using the FFT algorithm and normalized appropriately. The kernel $K$ is given in Example~{\color{blue} TODO}, so that $H_{K} = H^{\frac32}(\mathbb T^{2})$.
+In this example we show how well a gray-valued image may be approximated by an almost constant speed curve. The image is depicted in the bottom-right corner of Figure~\ref{fig:tiger} and has pixel size 170x170. The Fourier coefficients $\hat \mu_{k_{1},k_{2}}$ of the image are computed by a discrete Fourier transform (DFT) using the FFT algorithm and normalized appropriately. The kernel $K$ is given in Example~{\color{blue} TODO}, so that $H_{K} = H^{\frac32}(\mathbb T^{2})$.
 
 We start with $N_{0}=96$ points on a circle given by the formula
 \[
-  x_{0,k} = ( \tfrac15 \cos(2\pi k/N), \tfrac15 \sin(2\pi k/N)), \qquad k=0,\dots,N_{0}.
+  x_{0,k} = ( \tfrac15 \cos(2\pi k/N_{0}), \tfrac15 \sin(2\pi k/N_{0})), \qquad k=0,\dots,N_{0}.
 \]
 Then we solve for any index $i=0,\dots,11$ the problem \eqref{eq:constant_speed_min_relaxed} with parameters
 \[
   L_{i} = 0.97\cdot 2^{\frac{i+5}{2}},\qquad \alpha_{i} = 100\,L_{i}^{-5},\qquad N_{i} = 2^{i} N_{0} \sim L_{i}^{2}, \qquad r_{i}= \lfloor 2^{\frac{i+11}{2}} \rfloor \sim L_{i}.
 \]
 The parameters are chosen such that
-for a local minimizer $\gamma_{i}$ the length satisfies $\mathcal L(\gamma_{i}) \approx 2^{\frac{i+5}{2}}$ and the maximal speed is not too far from $L_{i}$. In each step a local minimizer is computed using the CG method with 100 interations. The obtained minimizer $\gamma_{i}$ will serve as the initial guess in the next step, which is obtained by inserting the midpoints, i.e. $x_{i+1,2k}=x_{i,k}$ and $x_{i+1,2k+1} = \frac{1}{2}(x_{i,k}+ x_{i,k+1})$, $k=0,\dots,N_{i}$. 
+for a local minimizer $\gamma_{i}$ the length satisfies $\mathcal L(\gamma_{i}) \approx 2^{\frac{i+5}{2}}$ and the maximal speed is not too far from $L_{i}$. In each step a local minimizer is computed using the CG method with 100 iterations. The obtained minimizer $\gamma_{i}$ will serve as the initial guess in the next step, which is obtained by inserting the midpoints, i.e. $x_{i+1,2k}=x_{i,k}$ and $x_{i+1,2k+1} = \frac{1}{2}(x_{i,k}+ x_{i,k+1})$, $k=0,\dots,N_{i}$. 
 
-In order to get a curve of almost constant speed we increase $\alpha_{i}$ by a factor of 100 and set $L_{i} = 2^{\frac{i+5}{2}}$. Then we apply $(i+1)$ times the CG method with maximal 100 iterations to the previously found curve $\gamma_{i}$. The results are depicted in Figure... 
+In order to get a curve of almost constant speed we increase $\alpha_{i}$ by a factor of 100 and set $L_{i} = 2^{\frac{i+5}{2}}$. Then we apply $(i+1)$ times the CG method with maximal 100 iterations to the previously found curve $\gamma_{i}$. The results are depicted in Figure~\ref{fig:tiger}. Note, the complexity for the evaluation of the function in \eqref{eq:constant_speed_min_relaxed} scales roughly as $N \sim L^{2}$.
+\begin{figure}
+  \begin{tabular}{ccc}
+%  \includegraphics[width=0.3\textwidth]{Images/tiger_0.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/tiger_1.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/tiger_2.png} &
+  \includegraphics[width=0.3\textwidth]{Images/tiger_3.png} \\ 
+  \includegraphics[width=0.3\textwidth]{Images/tiger_4.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/tiger_5.png} &
+  \includegraphics[width=0.3\textwidth]{Images/tiger_6.png} \\ 
+  \includegraphics[width=0.3\textwidth]{Images/tiger_7.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/tiger_8.png} &    
+  \includegraphics[width=0.3\textwidth]{Images/tiger_9.png} \\ 
+  \includegraphics[width=0.3\textwidth]{Images/tiger_10.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/tiger_11.png} &    
+  \includegraphics[width=0.3\textwidth]{Images/eyeofthetiger_original.jpg} \\   
+  \end{tabular}
+  \caption{Local minimizers of \eqref{eq:constant_speed_min_relaxed} for a grey-valued image $\mu$ (bottom-right corner) which have been computed by the strategy described for the torus $\mathbb T^{2}$.}
+  \label{fig:tiger}
+\end{figure}
+
+\begin{figure}
+  \begin{tabular}{ccc}
+%  \includegraphics[width=0.3\textwidth]{Images/tiger_0_thick.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/tiger_1_thick.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/tiger_2_thick.png} &
+  \includegraphics[width=0.3\textwidth]{Images/tiger_3_thick.png} \\ 
+  \includegraphics[width=0.3\textwidth]{Images/tiger_4_thick.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/tiger_5_thick.png} &
+  \includegraphics[width=0.3\textwidth]{Images/tiger_6_thick.png} \\ 
+  \includegraphics[width=0.3\textwidth]{Images/tiger_7_thick.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/tiger_8_thick.png} &    
+  \includegraphics[width=0.3\textwidth]{Images/tiger_9_thick.png} \\ 
+  \includegraphics[width=0.3\textwidth]{Images/tiger_10_thick.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/tiger_11_thick.png} &    
+  \includegraphics[width=0.3\textwidth]{Images/eyeofthetiger_original.jpg} \\   
+  \end{tabular}
+  \caption{Local minimizers of \eqref{eq:constant_speed_min_relaxed} for a grey-valued image $\mu$ (bottom-right corner) which have been computed by the strategy described for the torus $\mathbb T^{2}$.}
+  \label{fig:tiger}
+\end{figure}
 
 \textbf{3d-torus.} In this example we like to show two things. First, the algorithm works pretty well in three dimensions. Second we are able to approximate any compact surface in three-dimensional space by a curve {\color{blue} (Even more, the numerical experiments indicate that the approximation rates may indeed hold for any smooth Riemannian manifold)}.  
 
@@ -221,9 +260,67 @@ In this example we build a measure $\mu$ supported almost on a two-dimensional s
 \[
   \rho(x) := c^{-1} \sum_{p \in X} \mathrm{e}^{-30000 \|p-x\|_2^2}, \quad x \in [-\tfrac12,\tfrac12], \qquad c := \int_{[-\tfrac12,\tfrac12]^3} \sum_{p \in X} \mathrm{e}^{-30000 \|p-x\|_2^2} \mathrm dx,
 \]
-where $X\subset \mathbb R^{3}$ is the sampling set. Here the Fourier coefficients are again computed by a DFT and the kernel $K$ is given in Example~{\color{blue} TODO}, so that $H_{K} = H^{2}(\mathbb T^{3})$.
+where $X\subset [-\tfrac12,\tfrac12]^{3}$ is the sampling set, which we scaled appropriately. Here the Fourier coefficients are again computed by a DFT and the kernel $K$ is given in Example~{\color{blue} TODO}, so that $H_{K} = H^{2}(\mathbb T^{3})$.
 
+We start with $N_{0}=100$ points on a smooth curve given by the formula
+\[
+  x_{0,k} =  ( \tfrac{3}{10} \cos(2\pi k/N_{0}), \tfrac{3}{10} \sin(2\pi k/N_{0}), \tfrac{3}{10} \sin(4\pi k/N_{0})), \qquad k=0,\dots,N_{0}.
+\]
+Then we solve for any index $i=0,\dots,8$ the problem \eqref{eq:constant_speed_min_relaxed} with parameters
+\[
+  L_{i} = 2^{\frac{i+5}{2}},\qquad \alpha_{i} = 10\,L_{i}^{-5},\qquad N_{i} = 2^{i} N_{0} \sim L_{i}^{2}, \qquad r_{i}= \lfloor 2^{\frac{i+5}{2}} \rfloor \sim L_{i}.
+\]
+Note, the choice $d_{\mu}=2$ in this setting, since from a numerical perspective the density behaves like a two-dimensional manifold. 
+The parameters are chosen such that
+for a local minimizer $\gamma_{i}$ the length satisfies $\mathcal L(\gamma_{i}) \approx 2^{\frac{i+6}{2}}$ and the maximal speed is not too far from $\mathcal L(\gamma_{i})$. In each step a local minimizer is computed using the CG method with 100 iterations. The obtained minimizer $\gamma_{i}$ will serve as the initial guess in the next step, which is obtained by inserting the midpoints, i.e. $x_{i+1,2k}=x_{i,k}$ and $x_{i+1,2k+1} = \frac{1}{2}(x_{i,k}+ x_{i,k+1})$, $k=0,\dots,N_{i}$.
 
+In order to get a curve of almost constant speed we increase $\alpha_{i}$ by a factor of 100 and set $L_{i} = 2^{\frac{i+6}{2}}$. Then we apply two times the CG method with maximal 100 iterations to the previously found curve $\gamma_{i}$. The results are depicted in Figure~\ref{fig:spock}.  Note, the complexity for the evaluation of the function in \eqref{eq:constant_speed_min_relaxed} scales roughly as $N^{\frac{3}{2}} \sim L^{3}$.
+
+\begin{figure}
+  \begin{tabular}{ccc}
+  \includegraphics[width=0.3\textwidth]{Images/spock_0.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/spock_1.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/spock_2.png} \\
+  \includegraphics[width=0.3\textwidth]{Images/spock_3.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/spock_4.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/spock_5.png} \\ 
+  \includegraphics[width=0.3\textwidth]{Images/spock_6.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/spock_7.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/spock_8.png} \\ 
+  \end{tabular}
+  \caption{Local minimizers of \eqref{eq:constant_speed_min_relaxed} for a measure $\mu$ concentrated on a surface (head of Spock) which have been computed by the strategy described for the torus $\mathbb T^{3}$. The color scheme is only for better visibility of the 3d structure. }
+  \label{fig:spock}
+\end{figure}
+\begin{figure}
+  \begin{tabular}{ccc}
+  \includegraphics[width=0.3\textwidth]{Images/spock_0_thick.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/spock_1_thick.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/spock_2_thick.png} \\
+  \includegraphics[width=0.3\textwidth]{Images/spock_3_thick.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/spock_4_thick.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/spock_5_thick.png} \\ 
+  \includegraphics[width=0.3\textwidth]{Images/spock_6_thick.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/spock_7_thick.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/spock_8_thick.png} \\ 
+  \end{tabular}
+  \caption{Local minimizers of \eqref{eq:constant_speed_min_relaxed} for a measure $\mu$ concentrated on a surface (head of Spock) which have been computed by the strategy described for the torus $\mathbb T^{3}$.  The color scheme is only for better visibility of the 3d structure.}
+  \label{fig:spock}
+\end{figure}
+\begin{figure}
+  \begin{tabular}{ccc}
+  \includegraphics[width=0.3\textwidth]{Images/spock_0_ultra_thick.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/spock_1_ultra_thick.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/spock_2_ultra_thick.png} \\
+  \includegraphics[width=0.3\textwidth]{Images/spock_3_ultra_thick.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/spock_4_ultra_thick.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/spock_5_ultra_thick.png} \\ 
+  \includegraphics[width=0.3\textwidth]{Images/spock_6_ultra_thick.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/spock_7_ultra_thick.png} & 
+  \includegraphics[width=0.3\textwidth]{Images/spock_8_ultra_thick.png} \\ 
+  \end{tabular}
+  \caption{Local minimizers of \eqref{eq:constant_speed_min_relaxed} for a measure $\mu$ concentrated on a surface (head of Spock) which have been computed by the strategy described for the torus $\mathbb T^{3}$.  The color scheme is only for better visibility of the 3d structure.}
+  \label{fig:spock}
+\end{figure}
 
 %\bibliographystyle{abbrv}
 %\bibliography{biblio_ehler2}
