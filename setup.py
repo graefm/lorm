@@ -58,6 +58,6 @@ ext_modules.append(Extension(
 
 setup(name="lorm",
       version="0.0.1",
-      packages=["lorm"],
+      packages=["lorm","nfft","disc"],
       ext_modules=cythonize(ext_modules)
       )

@@ -1,0 +1,6 @@
+dist
+build
+lorm.egg-info
+examples/disc/.ipynb_checkpoints
+**#*
+**__pycache__
