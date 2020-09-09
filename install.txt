@@ -1,0 +1,14 @@
+- fftw3 must be installed
+- m4, autoconf, automake
+- git clone https://github.com/NFFT/nfft.git
+./bootstrap.sh
+./configure --enable-all --enable-openmp --prefix=/home/username
+export C_INCLUDE_PATH=/home/username/.local/include
+export LIBRARY_PATH=/home/username/.local/lib
+export LD_LIBRARY_PATH=/home/username/.local/lib  (after setting the environment variable we may need to reinstall python)
+python setup.py build
+python setup.py install --user
+
+some jupytern notebook examples need pythreejs:
+  - pip install pythreejs
+  - jupyter-nbextensions enable --py pythreejs
