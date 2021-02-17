@@ -6,7 +6,7 @@ import numpy as np
 import copy as cp
 
 class plan(ManifoldObjectiveFunction):
-    def __init__(self, M, N, alpha, L, equality_constraint=False):
+    def __init__(self, M, N, alpha, L, equality_constraint=False, closed=True):
         '''
         plan for computing the (polynomial) L^2 discrepancy for points measures on the sphere S^2
             E(mu,nu_M) = D(mu,nu_M)^2 + alpha/M sum_{i=1}^M (dist(x_i,x_{i-1}) - L)_+^2,  (if equality_constraint == False)
@@ -26,6 +26,7 @@ class plan(ManifoldObjectiveFunction):
         self._alpha = alpha
         self._L = L
         self._equality_constraint = equality_constraint
+        self._closed = closed
 
         def f(point_array_coords):
             lengths = self._eval_lengths(point_array_coords)
@@ -34,7 +35,6 @@ class plan(ManifoldObjectiveFunction):
                 pos_diff_lengths[ pos_diff_lengths < 0] = 0
             err_vector = self._eval_error_vector(point_array_coords)
             return np.real(np.sum(err_vector.array*err_vector.array.conjugate()*self._lambda_hat.array)) + self._alpha * 1./self._M*np.sum((pos_diff_lengths)**2)
-            #return np.sum(np.real(np.dot(err_vector.array.conjugate(),self._lambda_hat.array*err_vector.array))) + self._alpha*np.power(1/self._M*np.sum((self._M*lengths-self._T)**(self._p)),1/self._p)
 
         def grad(point_array_coords):
             le  = self._eval_error_vector(point_array_coords)
@@ -66,10 +66,8 @@ class plan(ManifoldObjectiveFunction):
         dp[1:self._M] -= point_array_coords[0:self._M-1,1]
         ct = np.cos(theta)
         st = np.sin(theta)
-        #lengths[0] =  np.sqrt(2 * (1 - np.cos(theta[0])*np.cos(theta[self._M-1]) - np.cos(phi[0]-phi[self._M-1])*np.sin(theta[0])*np.sin(theta[self._M-1])))
-        lengths[0] =  np.sqrt(2 * (1 - ct[0]*ct[self._M-1] - np.cos(dp[0])*st[0]*st[self._M-1]))
-        #for i in range(1,self._M):
-        #    lengths[i] =  np.sqrt(2 * (1 - np.cos(theta[i])*np.cos(theta[i-1]) - np.cos(phi[i]-phi[i-1])*np.sin(theta[i])*np.sin(theta[i-1])))
+        if self._closed:
+            lengths[0] =  np.sqrt(2 * (1 - ct[0]*ct[self._M-1] - np.cos(dp[0])*st[0]*st[self._M-1]))
         lengths[1:self._M] =  np.sqrt(2 * (1 - ct[1:self._M]*ct[0:self._M-1]- np.cos(dp[1:self._M])*st[1:self._M]*st[0:self._M-1]))
 
         return lengths
@@ -84,15 +82,9 @@ class plan(ManifoldObjectiveFunction):
         ct = np.cos(theta)
         st = np.sin(theta)
         lengths = self._eval_lengths(point_array_coords)
-        #lengths = np.sqrt(2 * (1 - np.cos(theta[0])*np.cos(theta[self._M-1]) - np.cos(phi[0]-phi[self._M-1])*np.sin(theta[0])*np.sin(theta[self._M-1])))
-        #grad_lengths[0,0] =  (np.sin(theta[0])*np.cos(theta[self._M-1]) - np.cos(phi[0]-phi[self._M-1])*np.cos(theta[0])*np.sin(theta[self._M-1]))/lengths
-        grad_lengths[0,0] =  (st[0]*ct[self._M-1] - np.cos(dp[0])*ct[0]*st[self._M-1])/lengths[0]
-        #grad_lengths[0,1] =  np.sin(phi[0]-phi[self._M-1])*np.sin(theta[0])*np.sin(theta[self._M-1])/lengths
-        grad_lengths[0,1] =  np.sin(dp[0])*st[0]*st[self._M-1]/lengths[0]
-        #for i in range(1,self._M):
-        #    lengths = np.sqrt(2 * (1 - np.cos(theta[i])*np.cos(theta[i-1]) - np.cos(phi[i]-phi[i-1])*np.sin(theta[i])*np.sin(theta[i-1])))
-        #    grad_lengths[i,0] =  (np.sin(theta[i])*np.cos(theta[i-1]) - np.cos(phi[i]-phi[i-1])*np.cos(theta[i])*np.sin(theta[i-1]))/lengths
-        #    grad_lengths[i,1] =  np.sin(phi[i]-phi[i-1])*np.sin(theta[i])*np.sin(theta[i-1])/lengths
+        if self._closed:
+            grad_lengths[0,0] =  (st[0]*ct[self._M-1] - np.cos(dp[0])*ct[0]*st[self._M-1])/lengths[0]
+            grad_lengths[0,1] =  np.sin(dp[0])*st[0]*st[self._M-1]/lengths[0]
         grad_lengths[1:self._M,0] = (st[1:self._M]*ct[0:self._M-1] - np.cos(dp[1:self._M])*ct[1:self._M]*st[0:self._M-1])/lengths[1:self._M]
         grad_lengths[1:self._M,1] = np.sin(dp[1:self._M])*st[1:self._M]*st[0:self._M-1]/lengths[1:self._M]
         return grad_lengths
@@ -107,16 +99,9 @@ class plan(ManifoldObjectiveFunction):
         ct = np.cos(theta)
         st = np.sin(theta)
         lengths = self._eval_lengths(point_array_coords)
-        #phi = point_array_coords[:,1]
-        #lengths = np.sqrt(2 * (1 - np.cos(theta[0])*np.cos(theta[self._M-1]) - np.cos(phi[0]-phi[self._M-1])*np.sin(theta[0])*np.sin(theta[self._M-1])))
-        #grad_lengths[self._M-1,0] =  (np.cos(theta[0])*np.sin(theta[self._M-1]) - np.cos(phi[0]-phi[self._M-1])*np.sin(theta[0])*np.cos(theta[self._M-1]))/lengths
-        grad_lengths[self._M-1,0] =  (ct[0]*st[self._M-1] - np.cos(dp[0])*st[0]*ct[self._M-1])/lengths[0]
-        #grad_lengths[self._M-1,1] =  -np.sin(phi[0]-phi[self._M-1])*np.sin(theta[0])*np.sin(theta[self._M-1])/lengths
-        grad_lengths[self._M-1,1] =  -np.sin(dp[0])*st[0]*st[self._M-1]/lengths[0]
-        #for i in range(0,self._M-1):
-        #    lengths = np.sqrt(2 * (1 - np.cos(theta[i+1])*np.cos(theta[i]) - np.cos(phi[i+1]-phi[i])*np.sin(theta[i+1])*np.sin(theta[i])))
-        #    grad_lengths[i,0] =  (np.cos(theta[i+1])*np.sin(theta[i]) - np.cos(phi[i+1]-phi[i])*np.sin(theta[i+1])*np.cos(theta[i]))/lengths
-        #    grad_lengths[i,1] =  -np.sin(phi[i+1]-phi[i])*np.sin(theta[i+1])*np.sin(theta[i])/lengths
+        if self._closed:
+            grad_lengths[self._M-1,0] =  (ct[0]*st[self._M-1] - np.cos(dp[0])*st[0]*ct[self._M-1])/lengths[0]
+            grad_lengths[self._M-1,1] =  -np.sin(dp[0])*st[0]*st[self._M-1]/lengths[0]
         grad_lengths[0:self._M-1,0] =  (ct[1:self._M]*st[0:self._M-1] - np.cos(dp[1:self._M])*st[1:self._M]*ct[0:self._M-1])/lengths[1:self._M]
         grad_lengths[0:self._M-1,1] =  -np.sin(dp[1:self._M])*st[1:self._M]*st[0:self._M-1]/lengths[1:self._M]
         return grad_lengths
@@ -131,11 +116,7 @@ class plan(ManifoldObjectiveFunction):
         if self._equality_constraint == False:
             pos_diff_lengths[ pos_diff_lengths < 0] = 0
         grad[0,:] +=  pos_diff_lengths[0]*grad_lengths1[0,:]
-        #for i in range(1,self._M):
-        #    grad[i,:] += self._p*lengths[i]**(self._p-1)*grad_lengths1[i,:]
         grad[1:self._M,:] += pos_diff_lengths[1:self._M]*grad_lengths1[1:self._M,:]
         grad[self._M-1,:] += pos_diff_lengths[0]*grad_lengths2[self._M-1,:]
-        #for i in range(0,self._M-1):
-        #    grad[i,:] += self._p*lengths[i+1]**(self._p-1)*grad_lengths2[i,:]
         grad[0:self._M-1,:] += pos_diff_lengths[1:self._M]*grad_lengths2[0:self._M-1,:]
         return 2*self._M*grad

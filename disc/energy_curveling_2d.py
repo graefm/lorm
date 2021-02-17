@@ -6,7 +6,7 @@ import numpy as np
 import copy as cp
 
 class plan(ManifoldObjectiveFunction):
-    def __init__(self, M, N, alpha, L, equality_constraint=False):
+    def __init__(self, M, N, alpha, L, equality_constraint=False, closed=True):
         '''
         plan for computing the (polynomial) L^2 discrepancy for points measures on the E2 (2d-Torus)
             E(mu,nu_M) = D(mu,nu_M)^2 + alpha/M sum_{i=1}^M (dist(x_i,x_{i-1}) - L)_+^2,  (if equality_constraint == False)
@@ -28,6 +28,7 @@ class plan(ManifoldObjectiveFunction):
         self._alpha = alpha
         self._L = L
         self._equality_constraint = equality_constraint
+        self._closed = closed
 
 
         def f(point_array_coords):
@@ -94,8 +95,9 @@ class plan(ManifoldObjectiveFunction):
     def _eval_lengths(self,point_array_coords):
         x = point_array_coords[:,0]
         y = point_array_coords[:,1]
-        lengths = np.zeros([self._M])
-        lengths[0] = np.sqrt((x[0]-x[self._M-1])**2 + (y[0]-y[self._M-1])**2)
+        lengths = 1e-10*np.ones([self._M]) # avoids division by zero in grad evaluation
+        if self._closed:
+            lengths[0] = np.sqrt((x[0]-x[self._M-1])**2 + (y[0]-y[self._M-1])**2)
         lengths[1:self._M] = np.sqrt((x[1:self._M]-x[0:self._M-1])**2 + (y[1:self._M]-y[0:self._M-1])**2)
         return lengths
 
@@ -104,7 +106,8 @@ class plan(ManifoldObjectiveFunction):
         x=point_array_coords[:,0]
         y=point_array_coords[:,1]
         lengths = self._eval_lengths(point_array_coords).reshape([self._M,1])
-        grad_lengths[0,:] = (point_array_coords[0,:] - point_array_coords[self._M-1,:])
+        if self._closed:
+            grad_lengths[0,:] = (point_array_coords[0,:] - point_array_coords[self._M-1,:])
         grad_lengths[1:self._M,:] = (point_array_coords[1:self._M,:] - point_array_coords[0:self._M-1,:])
         return grad_lengths/lengths
 
