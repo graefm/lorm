@@ -1,4 +1,4 @@
-from . import discrepancyS2
+from . import quadrature_s2
 from . import discrepancySO3
 from . import energy_stippling_2d
 from . import energy_stippling_s2

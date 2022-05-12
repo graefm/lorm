@@ -1,4 +1,4 @@
-__all__ = ["manif","funcs","optim"]
+__all__ = ["manif", "funcs", "optim"]
 
 from . import manif
 from . import funcs

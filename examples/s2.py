@@ -1,9 +1,10 @@
 import numpy as np
 import pylab as pl
 import lorm
-from disc import discrepancyS2
-%matplotlib
+from disc import energy_stippling_s2
+%matplotlib Qt
 
+# %%
 sphere2 = lorm.manif.Sphere2()
 print(sphere2)
 
@@ -14,9 +15,10 @@ p.local_coords = np.random.randn(M, 2)
 for x in p.coords:
     print(np.linalg.norm(x))
 
+# %%
 # we are going to compute a 3-design on the sphere S^2
 N = 3
-energy = discrepancyS2.plan(M, N)
+energy = energy_stippling_s2.plan(M, N)
 
 energy.f(p)
 cgMethod = lorm.optim.ConjugateGradientMethod()
@@ -27,6 +29,7 @@ t = lorm.manif.TangentVectorArrayParameterized(p_new)
 t.coords = 0.1 * np.random.randn(M, 3)
 f, q, x = lorm.utils.eval_objective_function_with_quadratic_approximation(energy, t)
 
+# %%
 for y in [f, q]:
     pl.plot(y)
 # the error should be O(x^3)

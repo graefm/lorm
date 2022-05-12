@@ -2,7 +2,6 @@ import lorm
 from lorm.funcs import ManifoldObjectiveFunction
 from nfft import nfft
 import numpy as np
-import copy as cp
 
 
 class plan(ManifoldObjectiveFunction):
@@ -31,19 +30,14 @@ class plan(ManifoldObjectiveFunction):
         def grad(point_array_coords):
             return np.real(self._eval_grad_error_vector(point_array_coords))
 
-        ManifoldObjectiveFunction.__init__(self, lorm.manif.EuclideanSpace(2), f, grad=grad, hess_mult=None,
-                                           parameterized=False)
+        def hess_mult(base_point_array_coords, tangent_array_coords):
+            norm = np.linalg.norm(tangent_array_coords)
+            h = 1e-12
+            return norm * (self._grad(base_point_array_coords + h * tangent_array_coords / norm)
+                           - self._grad(base_point_array_coords)) / h
 
-    def hess_mult(self, tangent_vector_array):
-        hess_mult_vector_array = cp.deepcopy(tangent_vector_array)
-        base_point_array_coords = hess_mult_vector_array.base_point_array.coords
-        tangent_array_coords = tangent_vector_array.coords
-        norm = np.linalg.norm(tangent_array_coords)
-        h = 1e-7
-        hess_mult_vector_array.coords[:] = norm * np.real(self._eval_grad_error_vector(
-            base_point_array_coords + h * tangent_array_coords / norm) - self._eval_grad_error_vector(
-            base_point_array_coords)) / h
-        return hess_mult_vector_array
+        ManifoldObjectiveFunction.__init__(self, lorm.manif.EuclideanSpace(2), f, grad=grad, hess_mult=hess_mult,
+                                           parameterized=False)
 
     def _eval_error_vector(self, point_array_coords):
         self._nfft_plan.x = np.mod(point_array_coords + 0.5, 1) - 0.5
